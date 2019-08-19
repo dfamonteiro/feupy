@@ -1,0 +1,130 @@
+import io
+import re
+from datetime import datetime, time
+from functools import reduce
+
+import bs4
+import requests
+from bs4 import BeautifulSoup
+from lxml.html.clean import Cleaner
+from PIL import Image
+
+BASE_URL    = "https://sigarra.up.pt/feup/en/"
+BASE_URL_PT = "https://sigarra.up.pt/feup/pt/" # Some pages don't have an english translation, such as "personal timetable"
+SIG_URLS = {
+    "authentication"                      : BASE_URL    + "vld_validacao.validacao",
+    "student page"                        : BASE_URL    + "fest_geral.cursos_list",
+    "academic pathway"                    : BASE_URL    + "fest_geral.curso_percurso_academico_view",
+    "position in the plan"                : BASE_URL    + "fest_geral.curso_posicao_plano_view",
+    "courses units"                       : BASE_URL    + "fest_geral.ucurr_inscricoes_list",
+    "status and more"                     : BASE_URL    + "fest_geral.estatutos_regimes_view",
+    "ingress data"                        : BASE_URL    + "fest_geral.info_ingresso_view",
+    "classes data"                        : BASE_URL    + "it_geral.resultado_aluno",
+    "personal timetable"                  : BASE_URL_PT + "hor_geral.estudantes_view", # This page is only available in portuguese
+    "picture"                             : BASE_URL    + "fotografias_service.foto",
+    "curricular unit"                     : BASE_URL    + "ucurr_geral.ficha_uc_view",
+    "curricular unit students"            : BASE_URL    + "fest_geral.estudantes_inscritos_list",
+    "curricular unit other occurrences"   : BASE_URL    + "ucurr_geral.ficha_uc_list",
+    "curricular unit statistics"          : BASE_URL    + "est_geral.dist_result_ocorr",
+    "curricular unit grades distribution" : BASE_URL    + "est_geral.dist_result_ocorr_detail",
+    "curricular unit stats history"       : BASE_URL    + "est_geral.ucurr_result_resumo",
+    "curricular unit classes"             : BASE_URL    + "it_listagem.lista_cursos_disciplina",
+    "curricular unit results"             : BASE_URL    + "lres_geral.show_pautas_resul",
+    "curricular unit timetable"           : BASE_URL_PT + "hor_geral.ucurr_view",
+    "curricular unit exams"               : BASE_URL_PT + "exa_geral.mapa_de_exames",
+    "teacher"                             : BASE_URL    + "func_geral.formview",
+    "course"                              : BASE_URL    + "cur_geral.cur_view",
+    "course classes"                      : BASE_URL_PT + "hor_geral.lista_turmas_curso",
+    "course exams"                        : BASE_URL_PT + "exa_geral.mapa_de_exames"
+}
+
+
+def get_current_academic_year():
+    today = datetime.now()
+    if today.month >= 9:# 9 -> September
+        return today.year
+    else:
+        return today.year - 1
+
+def scrape_html_table(bs_table, f = lambda tags_list, index : list( map(lambda tag: tag.string, tags_list) )):
+    """
+    Returns a nested list based on the contents of the table
+
+    html = \"\"\"<table class="formulario">
+        <tr>
+            <td class="very important stuff">Hotel</td>
+            <td>Trivago</td>
+        </tr>
+        <tr>
+            <td class="the class name doesn't matter">A</td>
+            <td>B</td>
+            <td>C</td>
+        </tr>
+    </table>\"\"\"
+    table_soup = BeautifulSoup(html, 'lxml').table #if it's not a table, you'll get a TypeError
+    print(scrape_html_table(table_soup))
+    #[['Hotel', 'Trivago'], ['A', 'B', 'C']]
+
+    There is an optional second argument that lets you define a function that operates over each row of the table(tags_list),
+    which is internally represented as a list of BeautifulSoup "th" and "td" tags. The second argument of the funtion 
+    is an integer that represents the index of the table row (starts at 0)
+
+    #ex1: do nothing
+    print(scrape_html_table(table_soup, lambda tags_list, index : tags_list))
+    #[[<td class="very important stuff">Hotel</td>, <td>Trivago</td>], [<td class="the class name doesn't matter">A</td>, <td>B</td>, <td>C</td>]]
+
+    #ex2: make a list of the first column of the table
+    print(scrape_html_table(table_soup, lambda tags_list, index : tags_list[0].string))
+    #['Hotel', 'A']
+
+    #ex3: make a list of the tags' names
+    print(scrape_html_table(table_soup, lambda tags_list, index : list(map(lambda tag : tag.name, tags_list))))
+    #[['td', 'td'], ['td', 'td', 'td']]
+
+    Don't forget that you can use the capabilities of the BeautifulSoup library to do whatever you want with these tag objects
+    """
+    if type(bs_table) != bs4.element.Tag:
+        raise TypeError("scrape_html_table() 'bs_table' argument must be a bs4.element.Tag, not '{0}'".format( type(bs_table).__name__ ))
+
+    if type(f).__name__ != "function": # Look, it works:/
+        raise TypeError("scrape_html_table() 'f' argument must be a function, not '{0}'".format( type(f).__name__ ))
+    
+    if bs_table.name != "table" and bs_table.name != "thead" and bs_table.name != "tbody":
+        raise ValueError("The tag element must be a table, not '{0}'".format(bs_table.name))
+
+    result = []
+    for index, tr in enumerate(bs_table.find_all("tr", recursive = False)):  # split the table into table rows
+        tags = tr.find_all(["th", "td"], recursive = False)                  # split the table row into table header and data tags
+        result.append(f(tags, index))                                        # apply f to the tags list and append to result
+    
+    return result
+
+def trim_html(html):
+    """Takes a html string as input and returns the html without any styles nor javascript"""
+    cleaner = Cleaner()
+    cleaner.scripts    = True
+    cleaner.javascript = True # Get rid of the javascript and the style
+    cleaner.style      = True
+
+    return cleaner.clean_html(html)
+
+def parse_academic_year(html):
+    """Searches the html for r"(\\d\\d\\d\\d)/\\d\\d\\d\\d" and returns the
+    first occurrence as an int. If no match is found, it will raise
+    a AttributeError exception
+    Eg: parse_academic_year("2018/2019 2020/2021") -> 2018
+    """
+    html = str(html) # must be a string (bs4 objects also work)
+
+    academic_year = int(re.findall(r"(\d\d\d\d)/\d\d\d\d", html)[0])
+    return academic_year
+
+def get_image(url, params = None):
+    """Fetches the image from the url and returns it as a PIL.Image object.
+    If you need to be logged in to access the image you may want to check
+    out the Credentials get_image function"""
+    request = requests.get(url, params)
+    image = Image.open(io.BytesIO(request.content))
+
+    return image
+

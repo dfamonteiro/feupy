@@ -1,0 +1,8 @@
+graft feupy
+
+# Remove __pycache__ & friends
+global-exclude __pycache__
+global-exclude *.py[co]
+
+include README.md
+include LICENSE
