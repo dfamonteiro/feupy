@@ -1,1 +1,4 @@
-Hi
+# Instalation
+```
+pip install feupy
+```
