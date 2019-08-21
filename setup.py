@@ -15,7 +15,7 @@ setuptools.setup(
     description="The sigarra scraping library no one asked for",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/up201806185/Sigarra-scraping-experiment",
+    url="https://github.com/up201806185/feupy",
 
     python_requires='>=3.6',
     install_requires=required,
