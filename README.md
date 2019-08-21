@@ -1,4 +1,4 @@
-# Instalation
-```bash
+# Installation
+```
 pip install feupy
 ```
