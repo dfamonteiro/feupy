@@ -1,5 +1,7 @@
-# feupy: the sigarra scraping library no one asked for
-
+# The sigarra scraping library no one asked for
+[![image](https://img.shields.io/pypi/v/feupy)](https://pypi.org/project/feupy/)
+[![image](https://img.shields.io/pypi/status/feupy)](https://pypi.org/project/feupy/)
+[![image](https://img.shields.io/pypi/pyversions/feupy.svg)](https://pypi.org/project/feupy/)
 ## Installation
 ```
 pip install feupy
@@ -12,3 +14,5 @@ pip install feupy
 python setup.py sdist bdist_wheel
 python -m twine upload dist/*
 ```
+3. Enter your PyPI credentials when prompted
+
