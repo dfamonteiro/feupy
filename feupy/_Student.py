@@ -138,12 +138,12 @@ class Student:
         For example, this is what the function returns when given a
         valid Credencials object and my username (201806185)
 
-        {'courses':                              # A tuple of dictionaries representing the courses' information
-            ({'course': MIEIC (2018/2019),       # A Course object. If a link to an object isn't available, it's just a string
+        {'courses':                              # A list of dictionaries representing the courses' information
+            [{'course': MIEIC (2018/2019),       # A Course object. If a link to an object isn't available, it's just a string
               'current year': 1,                 # Could be None if a number isn't present (or couldn't be parsed)
               'first academic year': 2018,
               'institution': 'Faculty of Engineering', # Best faculty
-              'status': 'A Frequentar'},),
+              'status': 'A Frequentar'}],
          'email': 'up201806185@fe.up.pt',
          'links': (),                            # personal_webpage is included in links
          'name': 'Daniel Filipe Amaro Monteiro', # people tend to have a name
@@ -170,7 +170,7 @@ class Student:
         email = email_div.a.contents[0] + "@" + email_div.a.contents[-1]
         info["email"] = email
 
-        courses = tuple([_parse_course_box(div) for div in soup.find_all("div", {"class" : "estudante-lista-curso-activo"})])
+        courses = [_parse_course_box(div) for div in soup.find_all("div", {"class" : "estudante-lista-curso-activo"})]
         info["courses"] = courses
 
         return info
