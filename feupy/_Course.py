@@ -116,12 +116,12 @@ class Course:
         return {tag.string : _utils.BASE_URL_PT + tag["href"] for tag in classes_tags}
 
 
-    def curricular_units(self, use_cache : bool = True) -> tuple:
-        """Returns a tuple of CurricularUnit objects representing
+    def curricular_units(self, use_cache : bool = True) -> list:
+        """Returns a list of CurricularUnit objects representing
         the curricular units of the course. Curricular units without
         a link are not included.
         Example:
-            (CurricularUnit(419981),
+            [CurricularUnit(419981),
              CurricularUnit(419982),
              CurricularUnit(419983),
              CurricularUnit(419984),
@@ -137,7 +137,7 @@ class Course:
              CurricularUnit(419994),
              CurricularUnit(419995),
              CurricularUnit(419996),
-             ...                   )
+             ...                   ]
         """
         html = _cache.get_html(self.url, use_cache = use_cache)
         soup = _bs4.BeautifulSoup(html, "lxml")
@@ -165,7 +165,7 @@ class Course:
                     teachers_urls.append(_utils.BASE_URL + tag["href"])
         _cache.get_html_async(teachers_urls, use_cache = use_cache)
 
-        return tuple(set(_CurricularUnit.CurricularUnit.from_url(url) for url in curricular_units_urls))
+        return list(set(_CurricularUnit.CurricularUnit.from_url(url) for url in curricular_units_urls))
 
     
     def syllabus(self, use_cache : bool = True) -> list:
