@@ -198,7 +198,7 @@ def get_html(url, params = {}, use_cache = True):
     return cache[url][1]
 
 def reset():
-    """Eliminates all entries from this cache implementation"""
+    """Eliminates all entries from the cache"""
     global cache
 
     if cache == None:
