@@ -114,6 +114,6 @@ dmypy.json
 .pyre/
 
 # Don't include cache
-data/cache.bak
-data/cache.dat
-data/cache.dir
+feupy/cache.bak
+feupy/cache.dat
+feupy/cache.dir
