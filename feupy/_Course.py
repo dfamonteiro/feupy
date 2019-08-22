@@ -229,7 +229,7 @@ class Course:
         return result
 
     def exams(self, use_cache : bool = False):
-        """Returns a tuple of dictionaries (See exams.exams() for further information)"""
+        """Returns a list of dictionaries (See exams.exams() for further information)"""
         url = _utils.SIG_URLS["curricular unit exams"] + "?" + _urllib.parse.urlencode({"p_curso_id" : str(self.pv_curso_id)})
 
         return _exams.exams(url, use_cache)

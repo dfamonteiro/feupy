@@ -13,7 +13,7 @@ from . import _CurricularUnit
 __all__ = ["exams"]
 
 def exams(url : str, use_cache : bool = False) -> tuple:
-    """Returns a tuple made of dictionaries.
+    """Returns a list of dictionaries.
     Example of a dictionary:
 
         {'curricular unit': CurricularUnit(420037),
@@ -35,7 +35,7 @@ def exams(url : str, use_cache : bool = False) -> tuple:
 
     urls = [_utils.BASE_URL_PT + tag["href"] for tag in tags if "exa_geral.exame_view" in tag["href"]]
     _cache.get_html_async(urls, use_cache = use_cache) # Refresh the cache
-    return tuple(_parse_exam_page(url) for url in urls)
+    return [_parse_exam_page(url) for url in urls]
 
 def _parse_exam_page(url : str):
     """Parses an exam page from the url and returns a dictionary"""
