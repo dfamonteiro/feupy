@@ -1,4 +1,5 @@
-"""Functions:
+"""
+Functions:
     parse_current_timetable
     parse_timetables
     parse_timetable

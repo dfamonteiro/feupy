@@ -1,4 +1,5 @@
-"""Functions:
+"""
+Functions:
     load_cache
     get_html
     reset
