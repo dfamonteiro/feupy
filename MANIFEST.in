@@ -1,5 +1,9 @@
 graft feupy
 
+exclude feupy/cache.bak
+exclude feupy/cache.dat
+exclude feupy/cache.dir
+
 # Remove __pycache__ & friends
 global-exclude __pycache__
 global-exclude *.py[co]
