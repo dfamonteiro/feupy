@@ -72,9 +72,10 @@ Hello, Daniel Filipe Amaro Monteiro!
 >>> jlopes = Teacher(230756)
 >>> print(f"Thanks for teaching us Python, {jlopes.name}!")
 Thanks for teaching us Python, João António Correia Lopes!
->>> jlopes.presentation
-'Personal Presentation\nJoão Correia Lopes is an Assistant Professor in Informatics Engineering at the Universidade do Porto and a senior researcher at INESC TEC. He has graduated in Electrical Engineering in the University of Porto in 1984 and holds a PhD in Computing Science by Glasgow University in 1997. His teaching includes undergraduate and graduate courses in databases and web applications, software engineering and programming, markup languages
-and semantic web. He has been involved in research projects in the area of data management, service-oriented architectures and e-Science. Currently his main research interests are e-Science and research data management.\nResearcherID  ORCID  Google Scholar Citations  DBLP Author  Scopus Author'
+>>> print(jlopes.presentation)
+Personal Presentation
+João Correia Lopes is an Assistant Professor in Informatics Engineering at the Universidade do Porto and a senior researcher at INESC TEC. He has graduated in Electrical Engineering in the University of Porto in 1984 and holds a PhD in Computing Science by Glasgow University in 1997. His teaching includes undergraduate and graduate courses in databases and web applications, software engineering and programming, markup languages and semantic web. He has been involved in research projects in the area of data management, service-oriented architectures and e-Science. Currently his main research interests are e-Science and research data management.
+ResearcherID  ORCID  Google Scholar Citations  DBLP Author  Scopus Author
 >>> pprint(vars(jlopes))
 {'acronym': 'JCL',
  'career': 'Pessoal Docente de Universidades',
