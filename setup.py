@@ -9,7 +9,7 @@ with open('requirements.txt') as f:
 
 setuptools.setup(
     name="feupy",
-    version="0.1.5",
+    version="0.2.0",
     author="Daniel Monteiro",
     author_email="up201806185@fe.up.pt",
     description="The sigarra scraping library no one asked for",
@@ -21,7 +21,7 @@ setuptools.setup(
     install_requires=required,
     packages=setuptools.find_packages(),
     classifiers=[
-        "Development Status :: 3 - Alpha",
+        "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.6',
