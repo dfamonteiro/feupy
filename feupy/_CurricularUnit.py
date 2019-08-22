@@ -478,14 +478,14 @@ class CurricularUnit:
         return result
     
     def classes(self, credentials : _Credentials.Credentials, use_cache : bool = True) -> dict:
-        """Returns a dictionary which maps a class name to a tuple of students
+        """Returns a dictionary which maps a class name to a list of students
         (the students of that class). Example:
         {
-            '1MIEIC01': (Student(201800000),
+            '1MIEIC01': [Student(201800000),
                          Student(201800001),
                          Student(201800002),
-                         Student(201800003)),
-            '1MIEIC02': (Student(201800004),
+                         Student(201800003)],
+            '1MIEIC02': [Student(201800004),
                          Student(201800005),
                          Student(201800006),
                          Student(201800007),
@@ -493,8 +493,8 @@ class CurricularUnit:
                          Student(201800009),
                          Student(201800010),
                          Student(201800011),
-                         Student(201800012)),
-            '...'     : (...)
+                         Student(201800012)],
+            '...'     : [...]
         }
         """
         html = credentials.get_html(_utils.SIG_URLS["curricular unit classes"], params = {"pv_ocorrencia_id" : str(self.pv_ocorrencia_id)}) # this html redirects us to the url we want
@@ -527,9 +527,9 @@ class CurricularUnit:
                 table = title.find_next("table")
 
                 if table == None:
-                    students = ()
+                    students = []
                 else:
-                    students = tuple(_Student.Student.from_a_tag(tag) for tag in table.find_all("a"))
+                    students = [_Student.Student.from_a_tag(tag) for tag in table.find_all("a")]
 
                 result[class_name] = students
 
