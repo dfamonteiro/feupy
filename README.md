@@ -52,7 +52,7 @@ Password for 201806185?
 Credentials(201806185)
 ```
 
-### Student information
+### Student info
 ```python
 >>> from feupy import Student
 >>> from pprint import pprint
@@ -66,16 +66,20 @@ Hello, Daniel Filipe Amaro Monteiro!
   'institution': 'Faculty of Engineering'},) # Best faculty
 ```
 
-### Teacher
+### Teacher info
 ```python
 >>> from feupy import Teacher
+>>> 
 >>> jlopes = Teacher(230756)
+>>> 
 >>> print(f"Thanks for teaching us Python, {jlopes.name}!")
 Thanks for teaching us Python, João António Correia Lopes!
+>>> 
 >>> print(jlopes.presentation)
 Personal Presentation
 João Correia Lopes is an Assistant Professor in Informatics Engineering at the Universidade do Porto and a senior researcher at INESC TEC. He has graduated in Electrical Engineering in the University of Porto in 1984 and holds a PhD in Computing Science by Glasgow University in 1997. His teaching includes undergraduate and graduate courses in databases and web applications, software engineering and programming, markup languages and semantic web. He has been involved in research projects in the area of data management, service-oriented architectures and e-Science. Currently his main research interests are e-Science and research data management.
 ResearcherID  ORCID  Google Scholar Citations  DBLP Author  Scopus Author
+>>> 
 >>> pprint(vars(jlopes))
 {'acronym': 'JCL',
  'career': 'Pessoal Docente de Universidades',
@@ -96,4 +100,46 @@ ResearcherID  ORCID  Google Scholar Citations  DBLP Author  Scopus Author
  'status': 'Active',
  'url': 'https://sigarra.up.pt/feup/en/func_geral.formview?p_codigo=230756',
  'voip': 3375}
+```
+
+### Curricular unit info
+```python
+>>> from feupy import CurricularUnit
+>>> fpro = CurricularUnit(419983)
+>>> fpro.name
+'Programming Fundamentals'
+>>> fpro.acronym
+'FPRO'
+>>> pprint(vars(fpro))
+{'ECTS_credits': 6.0,
+ 'academic_year': 2018,
+ 'acronym': 'FPRO',
+ 'code': 'EIC0005',
+ 'curricular_year': 1,
+ 'has_moodle': True,
+ 'is_active': True,
+ 'name': 'Programming Fundamentals',
+ 'number_of_students': 182,
+ 'pv_ocorrencia_id': 419983,
+ 'regents': (Teacher(230756),),
+ 'semester': 1,
+ 'teachers': (Teacher(230756),
+              Teacher(230756),
+              Teacher(520205),
+              Teacher(552793),
+              Teacher(209847)),
+ 'text': 'Teaching language\n'
+         'Portuguese\n'
+         'Objectives\n'
+         '1 - BACKGROUND\n'
+         'Fluency in the process of software development is a basic '
+         'prerequisite to the work of Informatics Engineers. In order to use '
+         'computers to solve problems effectively, students must be competent '
+         'at reading and writing programs using higher-order programming '
+         'languages.\n'
+         '2 - SPECIFIC AIMS...', # etc
+ 'url': 'https://sigarra.up.pt/feup/en/ucurr_geral.ficha_uc_view?pv_ocorrencia_id=419983',
+ 'webpage_url': 'https://web.fe.up.pt/~jlopes/doku.php/teach/fpro/index'}
+
+#TODO: showcase methods
 ```
