@@ -1,3 +1,8 @@
+"""Functions:
+    parse_current_timetable
+    parse_timetables
+    parse_timetable
+"""
 import datetime as _datetime
 import functools as _functools
 import re as _re

@@ -1,3 +1,10 @@
+"""Functions:
+    load_cache
+    get_html
+    reset
+    remove_invalid_entries
+    get_html_async
+"""
 import atexit as _atexit
 import datetime as _datetime
 import os as _os

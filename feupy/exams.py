@@ -1,3 +1,6 @@
+"""Functions:
+    exams
+"""
 import datetime as _datetime
 
 import bs4 as _bs4
