@@ -257,3 +257,91 @@ ResearcherID  ORCID  Google Scholar Citations  DBLP Author  Scopus Author
   'weekday': 'Wednesday'},
   ...] # etc
 ```
+
+### Course info
+```python
+>>> from feupy import Course
+>>> 
+>>> mieic = Course(742)
+>>> 
+>>> mieic.name
+'Master in Informatics and Computing Engineering'
+>>> mieic.acronym
+'MIEIC'
+>>> [director.name for director in mieic.directors] # Let's see the names of the directors
+['João Carlos Pascoal Faria', 'Maria Cristina de Carvalho Alves Ribeiro']
+>>> 
+>>> pprint(vars(mieic))
+{'acronym': 'MIEIC',
+ 'directors': (Teacher(210006), Teacher(209566)),
+ 'name': 'Master in Informatics and Computing Engineering',
+ 'official_code': 9459,
+ 'pv_ano_lectivo': 2019,
+ 'pv_curso_id': 742,
+ 'text': 'The Integrated Master in Informatics and Computing Engineering has '
+         'been awarded the international EUR-ACE quality label. This certifies '
+         'MIEIC as a high-quality programme which meets the international '
+         'standards for professional engineering education at the masters '
+         'level. [+ info]\n'
+         '\n'
+         'Accreditation by A3ES\r\n'
+         'The Agency for Assessment and Accreditation of Higher Education '
+         '(A3ES), at 20th of June, 2014, and in accordance with the '
+         'recomendation and fundamentation produced by the respective External '
+         ... , # etc
+ 'url': 'https://sigarra.up.pt/feup/en/cur_geral.cur_view?pv_curso_id=742&pv_ano_lectivo=2019'}
+>>> 
+>>> pprint(mieic.exams()) # Let's see this courses's currently scheduled exams
+[{'curricular unit': CurricularUnit(420037),
+  'finish': datetime.datetime(2019, 9, 6, 20, 0),
+  'observations': 'Tenho um exame de outra disciplina marcado para esse '
+                  'horário e assim juntava os dois.\r\n'
+                  'José Luís Moura Borges\r\n',
+  'rooms': ('B222',),
+  'season': 'Especial de Conclusão - SET-E-ESPECIAL',
+  'start': datetime.datetime(2019, 9, 6, 17, 0)},
+ ..., # etc
+ {'curricular unit': CurricularUnit(438941),
+  'finish': datetime.datetime(2019, 9, 26, 13, 0),
+  'observations': None,
+  'rooms': ('B104', 'B208', 'B213'),
+  'season': 'Exames ao abrigo de estatutos especiais - Mini-testes (1ºS)',
+  'start': datetime.datetime(2019, 9, 26, 9, 0)},
+ {'curricular unit': CurricularUnit(438941),
+  'finish': datetime.datetime(2019, 9, 26, 17, 30),
+  'observations': None,
+  'rooms': ('B104', 'B213', 'B208', 'B207'),
+  'season': 'Exames ao abrigo de estatutos especiais - Mini-testes (1ºS)',
+  'start': datetime.datetime(2019, 9, 26, 13, 30)}]
+>>> 
+>>> mieic.curricular_units() # All the curricular units (with a link) from that course
+[CurricularUnit(446081), CurricularUnit(437142), CurricularUnit(438941), 
+CurricularUnit(436401), CurricularUnit(436402), CurricularUnit(436403), 
+CurricularUnit(436404), CurricularUnit(436405), CurricularUnit(436406), 
+CurricularUnit(436407), CurricularUnit(436408), CurricularUnit(436409), 
+CurricularUnit(436410), CurricularUnit(436411), CurricularUnit(436412), 
+CurricularUnit(436413), CurricularUnit(436414), CurricularUnit(436415), 
+CurricularUnit(436416), CurricularUnit(436417), CurricularUnit(436418), 
+CurricularUnit(436419), CurricularUnit(436420), CurricularUnit(436421), 
+CurricularUnit(436422), CurricularUnit(436423), CurricularUnit(436424), 
+CurricularUnit(436425), CurricularUnit(436426), CurricularUnit(436427), 
+CurricularUnit(436428), CurricularUnit(436429), CurricularUnit(436430), 
+CurricularUnit(436431), CurricularUnit(436432), CurricularUnit(436433), 
+CurricularUnit(436434), CurricularUnit(436435), CurricularUnit(436436), 
+CurricularUnit(436437), CurricularUnit(436438), CurricularUnit(436439), 
+CurricularUnit(436440), CurricularUnit(436441), CurricularUnit(436442), 
+CurricularUnit(436443), CurricularUnit(436444), CurricularUnit(436445), 
+CurricularUnit(436446), CurricularUnit(436447), CurricularUnit(436448), 
+CurricularUnit(436449), CurricularUnit(436450), CurricularUnit(436451), 
+CurricularUnit(436452), CurricularUnit(436453), CurricularUnit(436454), 
+CurricularUnit(436455), CurricularUnit(436456), CurricularUnit(436457), 
+CurricularUnit(436458), CurricularUnit(436459), CurricularUnit(436460), 
+CurricularUnit(436461), CurricularUnit(436462), CurricularUnit(436463), 
+CurricularUnit(436464), CurricularUnit(436465), CurricularUnit(436466), 
+CurricularUnit(436467), CurricularUnit(436468), CurricularUnit(436469), 
+CurricularUnit(436470), CurricularUnit(436471)]
+>>> len(mieic.curricular_units()) # Just out of curiosity
+74
+>>> [uc for uc in mieic.curricular_units() if uc.curricular_year == 2 and uc.semester == 1] # The uc's I will have this semester
+[CurricularUnit(436433), CurricularUnit(436434), CurricularUnit(436435), CurricularUnit(436436), CurricularUnit(436437)]
+```
