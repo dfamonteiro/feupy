@@ -105,11 +105,14 @@ ResearcherID  ORCID  Google Scholar Citations  DBLP Author  Scopus Author
 ### Curricular unit info
 ```python
 >>> from feupy import CurricularUnit
+>>> 
 >>> fpro = CurricularUnit(419983)
+>>> 
 >>> fpro.name
 'Programming Fundamentals'
 >>> fpro.acronym
 'FPRO'
+>>> 
 >>> pprint(vars(fpro))
 {'ECTS_credits': 6.0,
  'academic_year': 2018,
@@ -140,6 +143,117 @@ ResearcherID  ORCID  Google Scholar Citations  DBLP Author  Scopus Author
          '2 - SPECIFIC AIMS...', # etc
  'url': 'https://sigarra.up.pt/feup/en/ucurr_geral.ficha_uc_view?pv_ocorrencia_id=419983',
  'webpage_url': 'https://web.fe.up.pt/~jlopes/doku.php/teach/fpro/index'}
-
-#TODO: showcase methods
+>>> 
+>>> pprint(fpro.other_occurrences())
+(CurricularUnit(436425),
+ CurricularUnit(419983),
+ CurricularUnit(399878),
+ CurricularUnit(384923),
+ CurricularUnit(368689),
+ CurricularUnit(350482),
+ CurricularUnit(332985),
+ CurricularUnit(272575),
+ CurricularUnit(272574),
+ CurricularUnit(272573),
+ CurricularUnit(272572),
+ CurricularUnit(272571),
+ CurricularUnit(272570),
+ CurricularUnit(272569))
+>>> [uc.academic_year for uc in fpro.other_occurrences()]
+[2019, 2018, 2017, 2016, 2015, 2014, 2013, 2012, 2011, 2010, 2009, 2008, 2007, 2006]
+>>> 
+>>> pprint(fpro.classes(credentials)) # Remember the Credentials object we created earlier?
+{
+    '1MIEIC01': [Student(201800000),
+                 Student(201800001),
+                 Student(201800002),
+                 Student(201800003)],
+    '1MIEIC02': [Student(201800004),
+                 Student(201800005),
+                 Student(201800006),
+                 Student(201800007),
+                 Student(201800008),
+                 Student(201800009),
+                 Student(201800010),
+                 Student(201800011),
+                 Student(201800012)],
+    '...'     : [...] # etc
+}
+>>>
+>>> pprint(fpro.students(credentials))
+# (student, status, number of registrations, student type)
+[(Student(201800001), 'Ordinário', 1, 'Normal'), 
+ (Student(201800002), 'Ordinário', 1, 'Normal'),
+ (Student(201800003), 'Ordinário', 1, 'Normal'),
+ (Student(201800004), 'Estudante internacional', 1, 'Normal'),
+ (Student(201800005), 'Estudante internacional', 1, 'Normal'),
+ (Student(201800006), 'Ordinário', 1, 'Normal'),
+ (Student(201800007), 'Ordinário', 1, 'Normal'),
+ (Student(201800008), 'Ordinário', 2, 'Normal'),
+ (Student(201800009), 'Ordinário', 2, 'Normal'),
+ (Student(201800010), 'Ordinário', 1, 'Normal'),
+ (Student(201800011), 'Estudante internacional', 1, 'Normal'),
+ (Student(201800012), 'Trabalhador-Estudante', 1, 'Normal'),
+ ... # etc
+ ]
+>>> 
+>>> pprint(fpro.results(credentials)) # Get the results from the exams
+{'Época Normal (1ºS)': [(Student(201800001), 10),
+                        (Student(201800002), 13),
+                        (Student(201800003), 10),
+                        (Student(201800004), 'RFE'),
+                        (Student(201800005), 'RFF'),
+                        (Student(201800006), 'RFF'),
+                        ...], # etc
+'Época Recurso (1ºS)': [(Student(201800008), 11),
+                        (Student(201800009), 7),
+                        (Student(201800010), 8),
+                        (Student(201800011), 8),
+                        (Student(201800012), 'RFE'),
+                        (Student(201800013), 13),
+                        (Student(201800014), 5),
+                        (Student(201800019), 'RFC'),
+                        ...]} # etc
+>>> 
+>>> pprint(fpro.timetable(credentials)) # Returns the classes from the timetable as dicts
+[{'class type': 'TP',
+  'classes': ('1MIEIC04',),
+  'curricular unit': CurricularUnit(419983),
+  'finish': datetime.time(10, 0),
+  'room': ('B307',),
+  'start': datetime.time(8, 0),
+  'teachers': (Teacher(209847), Teacher(520205)),
+  'weekday': 'Monday'},
+ {'class type': 'TP',
+  'classes': ('1MIEIC01',),
+  'curricular unit': CurricularUnit(419983),
+  'finish': datetime.time(10, 30),
+  'room': ('B302',),
+  'start': datetime.time(8, 30),
+  'teachers': (Teacher(230756),),
+  'weekday': 'Tuesday'},
+ {'class type': 'T',
+  'classes': ('1MIEIC01',
+              '1MIEIC02',
+              '1MIEIC03',
+              '1MIEIC04',
+              '1MIEIC05',
+              '1MIEIC06',
+              '1MIEIC07',
+              '1MIEIC08'),
+  'curricular unit': CurricularUnit(419983),
+  'finish': datetime.time(13, 30),
+  'room': ('B002',),
+  'start': datetime.time(12, 0),
+  'teachers': (Teacher(230756),),
+  'weekday': 'Tuesday'},
+ {'class type': 'TP',
+  'classes': ('1MIEIC06',),
+  'curricular unit': CurricularUnit(419983),
+  'finish': datetime.time(13, 30),
+  'room': ('B310',),
+  'start': datetime.time(11, 30),
+  'teachers': (Teacher(209847), Teacher(552793)),
+  'weekday': 'Wednesday'},
+  ...] # etc
 ```
