@@ -345,3 +345,8 @@ CurricularUnit(436470), CurricularUnit(436471)]
 >>> [uc for uc in mieic.curricular_units() if uc.curricular_year == 2 and uc.semester == 1] # The uc's I will have this semester
 [CurricularUnit(436433), CurricularUnit(436434), CurricularUnit(436435), CurricularUnit(436436), CurricularUnit(436437)]
 ```
+
+### User info
+```python
+#todo
+```
