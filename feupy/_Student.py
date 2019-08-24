@@ -13,28 +13,19 @@ __all__ = ["Student"]
 class Student:
     """This class represents a FEUP student as seen from their sigarra webpage.
 
-    Properties:
-        name             (str)
-        links            (tuple of strings)
-        personal_webpage (str)
-        username         (int) # e.g. 201806185
-        url              (str)
-        courses          (tuple of dictionaries*)
+    Attributes:
+        name             (str): The name of the student
+        links            (tuple): Urls from the student page (including Student.personal_webpage, if present)
+        personal_webpage (str): Url of the student's personal page, if present. Otherwise it is set to none
+        username         (int): The student's "pv_num_unico"
+        url              (str): Url of the student's sigarra page
+        courses          (tuple): The courses this student is enrolled in, as a tuple of dictionaries. 
     
-    * each dictionary from courses has 3 keys:
+    Each dictionary has 3 keys:
         "course"              (a Course object or a string (if a link to a course wasn't available))
         "first academic year" (int) (Please note: if your first year is 2019/2020, then "first academic year" will be 2019)
         "institution"         (string)
     
-    Methods:
-        from_url   (class method)
-        from_a_tag (class method)
-        full_info
-    
-    Operators:
-        __repr__, __str__
-        __eq__, __le__, __lt__, __ge__, __gt__ (Comparisons between students and hashing are made with the username)
-        __hash__
     """
 
     __slots__ = ["name", "links", "personal_webpage", "username", "courses", "url"]
