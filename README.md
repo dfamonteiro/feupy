@@ -346,7 +346,35 @@ CurricularUnit(436470), CurricularUnit(436471)]
 [CurricularUnit(436433), CurricularUnit(436434), CurricularUnit(436435), CurricularUnit(436436), CurricularUnit(436437)]
 ```
 
-### User info
+### Personal info
 ```python
-#todo
+>>> from feupy import User
+>>> 
+>>> me = User.from_credentials(credentials)
+>>> me.course.acronym
+'MIEIC'
+>>> 
+>>> pprint(me.courses_units())
+# Curricular unit       , grade
+[(CurricularUnit(436433), None),
+ (CurricularUnit(436434), None),
+ (CurricularUnit(436435), None),
+ (CurricularUnit(436436), None),
+ (CurricularUnit(436437), None),
+ (CurricularUnit(436439), None),
+ (CurricularUnit(436438), None),
+ (CurricularUnit(436441), None),
+ (CurricularUnit(436442), None),
+ (CurricularUnit(436440), None),
+ (CurricularUnit(419981), 10),
+ (CurricularUnit(419982), 11),
+ (CurricularUnit(419985), 12),
+ (CurricularUnit(419983), 13),
+ (CurricularUnit(419984), 14),
+ (CurricularUnit(420521), 15),
+ (CurricularUnit(419986), 16),
+ (CurricularUnit(419987), 17),
+ (CurricularUnit(419990), 18),
+ (CurricularUnit(419989), 19),
+ (CurricularUnit(419988), 20)]
 ```
