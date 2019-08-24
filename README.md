@@ -22,7 +22,7 @@ pip install feupy
 3. Enter your PyPI credentials when prompted
 4. Celebrate!
 
-## Thanks
+## Acknowledgements
 I would like to thank the following people:
 + The maintainers of the [requests](https://pypi.org/project/requests/) package
 + The maintainers of the [requests_futures](https://pypi.org/project/requests-futures/) package
