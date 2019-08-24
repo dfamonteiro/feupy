@@ -22,6 +22,21 @@ pip install feupy
 3. Enter your PyPI credentials when prompted
 4. Celebrate!
 
+## Building the docs and checking them out locally
+1. Make sure you have latest version of [sphinx](https://pypi.org/project/sphinx/) installed
+2. Change your working directory to docs/
+3. Run this command
+   ```
+   sphinx-build -b  html source build
+   ```
+4. Change your working directory to docs/build/
+5. Run this command
+   ```
+   python -m http.server 8080
+   ```
+6. Open a web browser at [localhost:8080](http://127.0.0.1:8080)
+
+
 ## Acknowledgements
 I would like to thank the following people:
 + The maintainers of the [requests](https://pypi.org/project/requests/) package
