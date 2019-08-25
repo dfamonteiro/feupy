@@ -13,33 +13,44 @@ __all__ = ["Student"]
 class Student:
     """This class represents a FEUP student as seen from their sigarra webpage.
 
+    Args:
+        username (int): The username of the student, e.g. 201806185
+        use_cache (:obj:`bool`, optional): Attempts use the cache if True, otherwise it will fetch from sigarra
+
+    
     Attributes:
         name             (str): The name of the student
-        links            (tuple): Urls from the student page (including Student.personal_webpage, if present)
-        personal_webpage (str): Url of the student's personal page, if present. Otherwise it is set to none
+        links            (tuple): Urls from the student page (including `Student.personal_webpage`, if present)
+        personal_webpage (str): Url of the student's personal page, if present. Otherwise it is set to None
         username         (int): The student's "pv_num_unico"
         url              (str): Url of the student's sigarra page
-        courses          (tuple): The courses this student is enrolled in, as a tuple of dictionaries. 
+        courses          (tuple(dict)): The courses this student is enrolled in.
     
-    Each dictionary has 3 keys:
-        "course"              (a Course object or a string (if a link to a course wasn't available))
-        "first academic year" (int) (Please note: if your first year is 2019/2020, then "first academic year" will be 2019)
-        "institution"         (string)
+        Each dictionary from the courses tuple has 3 keys:
+        -    "course"              (a :obj:`Course` object or a string (if a link to a course wasn't available))
+        -    "first academic year" (int): if your first year is 2019/2020, then "first academic year" will be 2019
+        -    "institution"         (string):
     
+    Example::
+        
+        from feupy import Student
+
+        daniel = Student(201806185)
+
+        print(daniel.name)
+        # Daniel Filipe Amaro Monteiro
+
+        print(daniel.username)
+        # 201806185
+
+        print(daniel.courses)
+        # ({'course': Course(742, 2019), 'institution': 'Faculty of Engineering', 'first academic year': 2018},)
     """
 
     __slots__ = ["name", "links", "personal_webpage", "username", "courses", "url"]
 
     def __init__(self, username : int, use_cache : bool = True):
-        """Parses the webpage of the student with the given username (20XXXXXXX).
-        The cache can be bypassed by setting use_cache to False.
-        If a given attribute can't be parsed (or is nonexistent, like personal_webpage often is),
-        it will be set to None.
-        """
 
-        if not isinstance(username, int):
-            raise TypeError(f"Student() 'username' argument must be an int, not '{type(username).__name__}'")
-        
         self.username = username
         self.url = _utils.SIG_URLS["student page"] + "?" + _urllib.parse.urlencode({"pv_num_unico" : str(username)})
         
@@ -97,10 +108,25 @@ class Student:
 
     @classmethod
     def from_url(cls, url : str, use_cache : bool = True):
-        """Scrapes the student webpage from the given url and returns a Student object"""
+        """Scrapes the student webpage from the given url and returns a :obj:`Student` object.
+
+        Args:
+            url (str): The url of the student's sigarra page
+            use_cache (:obj:`bool`, optional): Attempts use the cache if True, otherwise it will fetch from sigarra
         
-        if not isinstance(url, str):
-            raise TypeError(f"from_url() 'url' argument must be a string, not '{type(url).__name__}'")
+        Returns:
+            A :obj:`Student` object
+
+        Example::
+        
+            from feupy import Student
+
+            url = "https://sigarra.up.pt/feup/pt/fest_geral.cursos_list?pv_num_unico=201806185"
+            daniel = Student.from_url(url)
+
+            print(daniel.name)
+            # Daniel Filipe Amaro Monteiro
+        """
         
         matches = _re.findall(r"pv_num_unico=(\d+)$", url)
         
@@ -113,7 +139,15 @@ class Student:
     
     @classmethod
     def from_a_tag(cls, bs4_tag : _bs4.Tag, use_cache : bool = True):
-        """Scrapes the student webpage from the given anchor tag and returns a Student object"""
+        """Scrapes the student webpage from the given :obj:`bs4.tag` object and returns a :obj:`Student` object.
+        
+        Args:
+            bs4_tag (:obj:`bs4.tag`):
+            use_cache (:obj:`bool`, optional): Attempts use the cache if True, otherwise it will fetch from sigarra
+        
+        Returns:
+            A :obj:`Student` object
+        """
         
         if not isinstance(bs4_tag, _bs4.Tag):
             raise TypeError(f"from_a_tag() 'bs4_tag' argument must be a bs4.Tag, not '{type(bs4_tag).__name__}'")
