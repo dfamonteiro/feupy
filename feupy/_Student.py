@@ -27,9 +27,9 @@ class Student:
         courses          (tuple(dict)): The courses this student is enrolled in.
     
         Each dictionary from the courses tuple has 3 keys:
-        -    "course"              (a :obj:`Course` object or a string (if a link to a course wasn't available))
-        -    "first academic year" (int): if your first year is 2019/2020, then "first academic year" will be 2019
-        -    "institution"         (string):
+            - "course"              (a :obj:`Course` object or a string (if a link to a course wasn't available))
+            - "first academic year" (int): if your first year is 2019/2020, then "first academic year" will be 2019
+            - "institution"         (string)
     
     Example::
         
@@ -157,24 +157,48 @@ class Student:
         
         return Student.from_url(bs4_tag["href"], use_cache)
     
-    def full_info(self, credentials : _Credentials.Credentials):
-        """Returns a dictionary with the information that one can get
-        when it is logged in.
-        For example, this is what the function returns when given a
-        valid Credencials object and my username (201806185)
+    def full_info(self, credentials : _Credentials.Credentials) -> dict:
+        """Returns a dictionary with the information that one can get when it is logged in.
 
-        {'courses':                              # A list of dictionaries representing the courses' information
-            [{'course': MIEIC (2018/2019),       # A Course object. If a link to an object isn't available, it's just a string
-              'current year': 1,                 # Could be None if a number isn't present (or couldn't be parsed)
-              'first academic year': 2018,
-              'institution': 'Faculty of Engineering', # Best faculty
-              'status': 'A Frequentar'}],
-         'email': 'up201806185@fe.up.pt',
-         'links': (),                            # personal_webpage is included in links
-         'name': 'Daniel Filipe Amaro Monteiro', # people tend to have a name
-         'personal_webpage': None,
-         'url': 'https://sigarra.up.pt/feup/en/fest_geral.cursos_list?pv_num_unico=201806185',
-         'username': 201806185}
+        The dictionary has 7 keys:
+            - "courses" (list(dict))
+            - "email"   (str)
+            - "links"   (tuple(str))
+            - "name"    (str)
+            - "personal_webpage" (str)
+            - "url"     (str)
+            - "username" (int)
+
+        Args:
+            credentials (:obj:`Credentials`): A :obj:`Credentials` object
+        
+        Returns:
+            A dict
+
+        Example::
+
+            from feupy import Student, Credentials
+            from pprint import pprint
+
+            daniel = Student(201806185)
+
+            creds = Credentials()
+
+            pprint(daniel.full_info(creds))
+
+            # You will get something like this:
+            {'courses': [ # A list of dictionaries representing the courses' information
+                         {'course': Course(742, 2019), # A Course object. If a link to an object isn't available, it's just a string
+                          'current year': 2,   # Could be None if a number isn't present (or couldn't be parsed)
+                          'first academic year': 2018,
+                          'institution': 'Faculty of Engineering', # Best faculty
+                          'status': 'A Frequentar'}],
+            'email': 'up201806185@fe.up.pt',
+            'links': (),                      # personal_webpage is included in links
+            'name': 'Daniel Filipe Amaro Monteiro', # people tend to have a name
+            'personal_webpage': None,
+            'url': 'https://sigarra.up.pt/feup/en/fest_geral.cursos_list?pv_num_unico=201806185',
+            'username': 201806185}
         """
 
         if not isinstance(credentials, _Credentials.Credentials):
