@@ -173,7 +173,7 @@ class Student:
             credentials (:obj:`Credentials`): A :obj:`Credentials` object
         
         Returns:
-            A dict
+            A dictionary
 
         Example::
 
