@@ -12,7 +12,7 @@ from . import _CurricularUnit
 
 __all__ = ["exams"]
 
-def exams(url : str, use_cache : bool = False) -> list:
+def exams(url : str, use_cache : bool = True) -> list:
     """Returns a list of dictionaries.
     Example of a dictionary:
 
