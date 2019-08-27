@@ -16,23 +16,41 @@ class Course:
     """This class represents a course as seen from its sigarra webpage.
 
     Args:
+        pv_curso_id (int): The id of the course, for example MIEIC's id is 742
+        pv_ano_lectivo (:obj:`int`, optional): The year of this course. It defaults to the current year (i.e. 2019, at the time of writing)
+        use_cache (:obj:`bool`, optional): Attempts use the cache if True, otherwise it will fetch from sigarra
+
+
+    Attributes:
         pv_curso_id      (int): The id of the course
-        pv_ano_lectivo   (int): The year of this course page
+        pv_ano_lectivo   (int): The year of this course's page
         url              (str): Url of the course's sigarra page
         name             (str): The name the course
         official_code    (int): The official code
         directors        (tuple(:obj:`Teacher`)): The directors of this course
         acronym          (str): The acronym of this course
-        text             (str or None):
+        text             (str or None): The text that can be found in the course's page
 
+    Example::
+
+        from feupy import Course
+
+        mieic = Course(742)
+
+        print(mieic.name)
+        # Master in Informatics and Computing Engineering
+
+        print(mieic.acronym)
+        # MIEIC
+
+        for director in mieic.directors:
+            print(director.name)
+        # João Carlos Pascoal Faria
+        # Maria Cristina de Carvalho Alves Ribeiro
     """
     __slots__ = ["pv_curso_id","pv_ano_lectivo", "url", "name", "official_code", "directors", "acronym", "text"]
 
     def __init__(self, pv_curso_id : int, pv_ano_lectivo : int = None, use_cache : bool = True):
-        """Parses the webpage of the course with the given pv_curso_id.
-        If a pv_ano_lectivo (e.g. 2019) is not used, the current academic year will be used.
-        The cache can be bypassed by setting use_cache to False.
-        """
         
         if pv_ano_lectivo == None:
             pv_ano_lectivo = _utils.get_current_academic_year()
@@ -75,9 +93,27 @@ class Course:
 
 
     def classes(self, credentials : _Credentials.Credentials) -> dict:
-        """Returns a dictionary which maps the courses' classes
+        """Returns a dictionary which maps the course's classes
         to their corresponding timetable links.
-        Example:
+
+        Args:
+            credentials (:obj:`Credentials`): A :obj:`Credentials` object
+        
+        Returns:
+            A dictionary
+        
+        Example::
+
+            from feupy import Course, Credentials
+            from pprint import pprint
+
+            mieic = Course(742)
+
+            creds = Credentials()
+
+            pprint(mieic.classes(creds))
+
+            # You will get something like this:
             {'1MIEIC01':'https://sigarra.up.pt/feup/pt/hor_geral.turmas_view?pv_turma_id=000001&pv_periodos=1&pv_ano_lectivo=2018',
             '1MIEIC02': 'https://sigarra.up.pt/feup/pt/hor_geral.turmas_view?pv_turma_id=000002&pv_periodos=1&pv_ano_lectivo=2018',
             '1MIEIC03': 'https://sigarra.up.pt/feup/pt/hor_geral.turmas_view?pv_turma_id=000003&pv_periodos=1&pv_ano_lectivo=2018',
@@ -85,7 +121,8 @@ class Course:
             '1MIEIC05': 'https://sigarra.up.pt/feup/pt/hor_geral.turmas_view?pv_turma_id=000005&pv_periodos=1&pv_ano_lectivo=2018',
             '1MIEIC06': 'https://sigarra.up.pt/feup/pt/hor_geral.turmas_view?pv_turma_id=000006&pv_periodos=1&pv_ano_lectivo=2018',
             ...                                                                                                                   }
-        You may be interested on the functions provided by timetable.py
+        
+        You can use the functions provided by :doc:`timetable` to get the timetables from the urls.
         """
 
         payload = {
@@ -106,10 +143,27 @@ class Course:
 
 
     def curricular_units(self, use_cache : bool = True) -> list:
-        """Returns a list of CurricularUnit objects representing
+        """Returns a list of :obj:`CurricularUnit` objects representing
         the curricular units of the course. Curricular units without
         a link are not included.
-        Example:
+        
+        Args:
+            use_cache (:obj:`bool`, optional): Attempts use the cache if True, otherwise it will fetch from sigarra
+
+        Returns:
+            A list of :obj:`CurricularUnit` objects
+
+
+        Example::
+
+            from feupy import Course
+            from pprint import pprint
+
+            mieic = Course(742)
+
+            pprint(mieic.curricular_units())
+
+            # You will get something like this:
             [CurricularUnit(419981),
              CurricularUnit(419982),
              CurricularUnit(419983),
@@ -158,33 +212,47 @@ class Course:
 
     
     def syllabus(self, use_cache : bool = True) -> list:
-        """Returns a list of tuples.
-        Example of a tuple:
-        (
-            'Software Engineering', # keyword (str)
-            None,                   # branch (either str or None, depending on whether or not the curricular unit belongs to a specific branch)
-            CurricularUnit(420015), # the curricular unit (CurricularUnit)
-            True                    # whether or not it is mandatory (bool)
-        )
+        """Returns a list of tuples containing more information about the curricular units of the course.
+        
+        Each tuple has 4 elements:
+            0. keyword (str)
+            1. course branch (either str or None, depending on whether or not the curricular unit belongs to a specific branch)
+            2. curricular unit (:obj:`CurricularUnit`)
+            3. is mandatory (bool)
+        
+        Args:
+            use_cache (:obj:`bool`, optional): Attempts use the cache if True, otherwise it will fetch from sigarra
 
-        Example of the output:
-        [
-            ('Automation', 'Automation', CurricularUnit(418771), False),
-            ('Automation', 'Automation', CurricularUnit(418770), False),
-            ('Automation', 'Automation', CurricularUnit(418737), True),
-            ('Automation', 'Automation', CurricularUnit(418746), True),
-            ('Automation', 'Automation', CurricularUnit(418747), False),
-            ('Automation', 'Automation', CurricularUnit(418736), True),
-            ('Automation', 'Thermal Energy', CurricularUnit(418773), False),
-            ('Automation', 'Thermal Energy', CurricularUnit(418736), False),
-            ('Automation', 'Production Management', CurricularUnit(418773), False),
-            ('Automation', 'Production Management', CurricularUnit(418736), False),
-            ('Automation', 'Production, Conception and Manufacturing', CurricularUnit(418773), False),
-            ('Automation', 'Structural Engineering and Machine Design', CurricularUnit(418736), False),
-            ('Automation', None, CurricularUnit(418722), True),
-            ('Personal and Interpersonal Skills', 'Automation', CurricularUnit(418787), False),
-            ...
-        ]
+        Returns:
+            A list of tuples
+
+        Example::
+
+            from feupy import Course
+            from pprint import pprint
+
+            miem = Course(743)
+
+            pprint(miem.syllabus())
+
+            # You will get something like this:
+            [
+                ('Automation', 'Automation', CurricularUnit(418771), False),
+                ('Automation', 'Automation', CurricularUnit(418770), False),
+                ('Automation', 'Automation', CurricularUnit(418737), True),
+                ('Automation', 'Automation', CurricularUnit(418746), True),
+                ('Automation', 'Automation', CurricularUnit(418747), False),
+                ('Automation', 'Automation', CurricularUnit(418736), True),
+                ('Automation', 'Thermal Energy', CurricularUnit(418773), False),
+                ('Automation', 'Thermal Energy', CurricularUnit(418736), False),
+                ('Automation', 'Production Management', CurricularUnit(418773), False),
+                ('Automation', 'Production Management', CurricularUnit(418736), False),
+                ('Automation', 'Production, Conception and Manufacturing', CurricularUnit(418773), False),
+                ('Automation', 'Structural Engineering and Machine Design', CurricularUnit(418736), False),
+                ('Automation', None, CurricularUnit(418722), True),
+                ('Personal and Interpersonal Skills', 'Automation', CurricularUnit(418787), False),
+                ...
+            ]
         """
 
         html = _cache.get_html(self.url, use_cache = use_cache)
@@ -217,8 +285,15 @@ class Course:
         
         return result
 
-    def exams(self, use_cache : bool = False):
-        """Returns a list of dictionaries (See exams.exams() for further information)"""
+    def exams(self, use_cache : bool = True) -> list:
+        """Returns a list of the exams of this course.
+        
+        Args:
+            use_cache (:obj:`bool`, optional): Attempts use the cache if True, otherwise it will fetch from sigarra
+
+        Returns:
+            A list of dictionaries (see :func:`exams.exams` for more information about the dictionaries)
+        """
         url = _utils.SIG_URLS["curricular unit exams"] + "?" + _urllib.parse.urlencode({"p_curso_id" : str(self.pv_curso_id)})
 
         return _exams.exams(url, use_cache)
@@ -226,8 +301,26 @@ class Course:
 
     @classmethod
     def from_url(cls, url : str, use_cache : bool = True):
-        """Scrapes the course webpage from the given url and returns a Course object"""
+        """Scrapes the course webpage from the given url and returns a :obj:`Course` object.
+
+        Args:
+            url (str): The url of the course's sigarra page
+            use_cache (:obj:`bool`, optional): Attempts use the cache if True, otherwise it will fetch from sigarra
         
+        Returns:
+            A :obj:`Course` object
+
+        Example::
+        
+            from feupy import Course
+
+            url = "https://sigarra.up.pt/feup/pt/cur_geral.cur_view?pv_curso_id=742&pv_ano_lectivo=2018"
+            mieic = Course.from_url(url)
+
+            print(mieic.name)
+            # Master in Informatics and Computing Engineering
+        """
+
         try:
             pv_curso_id    = int(_re.findall(r"pv_curso_id=(\d+)"   , url)[0])
             pv_ano_lectivo = int(_re.findall(r"pv_ano_lectivo=(\d+)", url)[0])
@@ -239,8 +332,16 @@ class Course:
 
     @classmethod
     def from_a_tag(cls, bs4_tag : _bs4.Tag, use_cache : bool = True):
-        """Scrapes the course webpage from the given anchor tag and returns a Course object"""
+        """Scrapes the course webpage from the given :obj:`bs4.tag` object and returns a :obj:`Course` object.
         
+        Args:
+            bs4_tag (:obj:`bs4.tag`):
+            use_cache (:obj:`bool`, optional): Attempts use the cache if True, otherwise it will fetch from sigarra
+        
+        Returns:
+            A :obj:`Course` object
+        """
+
         if bs4_tag.name != "a":
             raise ValueError(f"from_a_tag() 'bs4_tag' argument must be an anchor tag, not '{bs4_tag.name}'")
         
