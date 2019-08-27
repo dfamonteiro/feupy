@@ -17,6 +17,11 @@ class Teacher:
         that attribute was able to be parsed. For example: personal_webpage, email, and
         presentation are not always available in teacher pages.
 
+    Args:
+        p_codigo (int): The id of the teacher
+        use_cache (:obj:`bool`, optional): Attempts use the cache if True, otherwise it will fetch from sigarra
+
+
     Attributes:
         p_codigo         (int): The id of the teacher
         name             (str): The name of the teacher
