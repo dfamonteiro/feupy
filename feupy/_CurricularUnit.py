@@ -17,53 +17,91 @@ __all__ = ["CurricularUnit"]
 class CurricularUnit:
     """This class represents a FEUP curricular unit.
 
-    Properties:
-        pv_ocorrencia_id   (int)
-        url                (str) # The url of this curricular unit page
-        name               (str) # e.g. 'Microprocessors and Personal Computers'
-        code               (str) # e.g. 'EIC0016'
-        acronym            (str) # e.g. 'MPCP'
-        academic_year      (int) # e.g. 2018 (meaning this curricular unit was taught in 2018/2019)
-        semester           (int) # either 1 or 2
-        has_moodle         (bool)
-        is_active          (bool)
-        webpage_url        (str or None) # For example, CurricularUnit(419983).webpage_url == 'https://web.fe.up.pt/~jlopes/doku.php/teach/fpro/index' (FPRO)
+    Args:
+        pv_ocorrencia_id (int): The id of the curricular unit
+        use_cache (:obj:`bool`, optional): Attempts use the cache if True, otherwise it will fetch from sigarra
+
+    Attributes:
+        pv_ocorrencia_id   (int): The id of the curricular unit
+        url                (str): The url of the curricular unit page
+        name               (str): The name of the curricular unit
+        code               (str)
+        acronym            (str): The acronym of the curricular unit
+        academic_year      (int): The academic year in which this curricular unit was taught
+        semester           (int): The semester in which this curricular unit was taught
+        has_moodle         (bool): Whether or not this curricular unit has a moodle page
+        is_active          (bool): Whether or not this curricular unit is active
+        webpage_url        (str or None): The webpage of this curricular unit, if it exists. Otherwise it's set to None
         number_of_students (int)
-        curricular_year    (int) # usually 1-5
+        curricular_year    (int): usually 1-5
         ECTS_credits       (float)
-        regents            (tuple of Teacher objects)
-        teachers           (tuple of Teacher objects)
-        text               (string) # Basically a text dump starting from "Teaching language"
-    
-    Methods:
-        from_url   (class method)
-        from_a_tag (class method)
-        contents
-        students
-        timetable
-        all_timetables
-        other_occurrences
-        stats
-        grades_distribution
-        statistics_history
-        classes
-        exams
-        results
-    
-    Operators:
-        __repr__, __str__
-        __eq__, __le__, __lt__, __ge__, __gt__ (Comparisons between curricular units and hashing are made with the pv_ocorrencia_id)
-        __hash__
+        regents            (tuple(:obj:`Teacher`))
+        teachers           (tuple(:obj:`Teacher`))
+        text               (string): Basically a text dump starting from "Teaching language"
+
+    Example::
+
+        from feupy import CurricularUnit
+        from pprint import pprint
+
+        mpcp = CurricularUnit(419989)
+
+        print(mpcp.name)
+        # Microprocessors and Personal Computers
+
+        print(mpcp.acronym)
+        # MPCP
+
+        print(mpcp.semester)
+        # 2
+
+        for teacher in mpcp.teachers:
+            print(teacher.name)
+        # João Paulo de Castro Canas Ferreira
+        # Bruno Miguel Carvalhido Lima
+        # António José Duarte Araújo
+        # João Paulo de Castro Canas Ferreira
+        # João Paulo Filipe de Sousa
+
+        pprint(vars(mpcp))
+        # You'll get something like this:
+        {'ECTS_credits': 6.0,
+        'academic_year': 2018,
+        'acronym': 'MPCP',
+        'code': 'EIC0016',
+        'curricular_year': 1,
+        'has_moodle': True,
+        'is_active': True,
+        'name': 'Microprocessors and Personal Computers',
+        'number_of_students': 220,
+        'pv_ocorrencia_id': 419989,
+        'regents': (Teacher(210963),),
+        'semester': 2,
+        'teachers': (Teacher(210963),
+                    Teacher(547486),
+                    Teacher(211636),
+                    Teacher(210963),
+                    Teacher(210660)),
+        'text': 'Teaching language\\n'
+                'Portuguese\\n'
+                'Objectives\\n'
+                'BACKGROUND\\n'
+                'The PC-compatible desktop and mobile platforms are an everyday tool '
+                'in modern societies. Their architecture reflects the current '
+                'technological development, but also defines the limits of the '
+                "computer's capabilities and performance. Variants of the ARM "
+                'instruction set are used today n most mobile platforms (tablets, '
+                'mobile phones)in use today. Both system architecture and ISA have a '
+                'deep impact on the day-to-day practice of informatics engineers.\\n'
+                'SPECIFIC AIMS\\n'
+                'The ... etc',
+        'url': 'https://sigarra.up.pt/feup/en/ucurr_geral.ficha_uc_view?pv_ocorrencia_id=419989',
+        'webpage_url': None}
     """
     __slots__ = ["pv_ocorrencia_id", "url", "name", "code", "acronym", "academic_year", "semester", "has_moodle", "is_active", "webpage_url", 
                  "number_of_students", "curricular_year", "ECTS_credits", "regents", "teachers", "text"]
     
     def __init__(self, pv_ocorrencia_id : int, use_cache : bool = True):
-        """Parses the webpage of the curricular unit with the given pv_ocorrencia_id.
-        The cache can be bypassed by setting use_cache to False.
-        If a given attribute can't be parsed (or is nonexistent),
-        it will be set to None.
-        """
 
         self.pv_ocorrencia_id = pv_ocorrencia_id
         self.url = _utils.SIG_URLS["curricular unit"] + "?" + _urllib.parse.urlencode({"pv_ocorrencia_id" : str(pv_ocorrencia_id)})
@@ -132,34 +170,48 @@ class CurricularUnit:
         (a nested folder) or a tuple (a file or a link).
 
         A tuple representing a file is made of 4 attributes:
-        (
-            file type       :string (either "file" or "link"),
-            url             :string (note: if you want to download a file from sigarra, check Credentials.download()),
-            info            :string or None,
-            upload date     :Datetime.Date (Note: links will have this attribute always set to today)
-        )
+            0. file type, either "file" or "link" (str)
+            1. url (Note: you can download files by passing this url to :func:`Credentials.download`) (str)
+            2. info (str or None)
+            3. upload date (Note: links will have this attribute always set to today) (:obj:`Datetime.Date`)
 
-        Example of the output:
-        {'A folder': {'folderception': {'A file': ('file',
-                                                'https://sigarra.up.pt/feup/pt/conteudos_service.conteudos_cont?pct_id=012345&pv_cod=06ahastCa',
-                                                None,
-                                                datetime.date(2018, 10, 2)),
-                                        'Python': ('file',
-                                                'https://sigarra.up.pt/feup/pt/conteudos_service.conteudos_cont?pct_id=012346&pv_cod=06TtaSaPH7',
-                                                'aaaaaa',
-                                                datetime.date(2018, 11, 13)),
-                                        'Simulator': ('link',
-                                                    'https://github.com/hneemann/Digital',
-                                                    'It\'s a simulator.',
-                                                    datetime.date(2019, 5, 25))},
-                    'jhbh': {'aa': ('link',
-                                    'https://salmanarif.bitbucket.io/visual/index.html',
-                                    'aaaaaa',
-                                    datetime.date(2019, 8, 2)),
-                            'bb': ('file',
-                                    'https://sigarra.up.pt/feup/pt/conteudos_service.conteudos_cont?pct_id=012347&pv_cod=06WjyvGato',
-                                    'banana',
-                                    datetime.date(2018, 10, 12))}}}
+        Args:
+            credentials (:obj:`Credentials`): A :obj:`Credentials` object
+
+        Returns:
+            A nested dictionary structure
+
+        Example::
+        
+            from feupy import CurricularUnit, Credentials
+            from pprint import pprint
+
+            mpcp = CurricularUnit(419989)
+
+            creds = Credentials()
+
+            pprint(mpcp.contents(creds))
+            # You'll get something like this:
+            {'A folder': {'folderception': {'A file': ('file',
+                                                    'https://sigarra.up.pt/feup/pt/conteudos_service.conteudos_cont?pct_id=012345&pv_cod=06ahastCa',
+                                                    None,
+                                                    datetime.date(2018, 10, 2)),
+                                            'Python': ('file',
+                                                    'https://sigarra.up.pt/feup/pt/conteudos_service.conteudos_cont?pct_id=012346&pv_cod=06TtaSaPH7',
+                                                    'aaaaaa',
+                                                    datetime.date(2018, 11, 13)),
+                                            'Simulator': ('link',
+                                                        'https://github.com/hneemann/Digital',
+                                                        'It\\'s a simulator.',
+                                                        datetime.date(2019, 5, 25))},
+                        'jhbh': {'aa': ('link',
+                                        'https://salmanarif.bitbucket.io/visual/index.html',
+                                        'aaaaaa',
+                                        datetime.date(2019, 8, 2)),
+                                'bb': ('file',
+                                        'https://sigarra.up.pt/feup/pt/conteudos_service.conteudos_cont?pct_id=012347&pv_cod=06WjyvGato',
+                                        'banana',
+                                        datetime.date(2018, 10, 12))}}}
         """
         html = credentials.get_html(self.url) # curricular unit page
         soup = _bs4.BeautifulSoup(html, "lxml")
@@ -244,18 +296,37 @@ class CurricularUnit:
         return result
 
     def students(self, credentials : _Credentials.Credentials, use_cache : bool = True) -> list:
-        """Parses the student page and returns a list of tuples.
-        A credencials object is required because one needs 
-        privileged access to access the page.
-        The cache can be bypassed by setting use_cache to False.
-        The each tuple is made of a Student object, their status (string), 
-        number of registrations (int), and the type of student.
-        Example of a tuple:
-        [
-            ...,
-            (Student(201812345), 'Ordinário', 1, 'Normal'),
-            ...
-        ]
+        """Returns the students of this curricular unit as a list of tuples.
+        
+        Each tuple has 4 elements:
+            0. student (:obj:`Student`)
+            1. status (str)
+            2. number of registrations (int)
+            3. type of student (str)
+        
+        Args:
+            credentials (:obj:`Credentials`): A :obj:`Credentials` object
+            use_cache (:obj:`bool`, optional): Attempts use the cache if True, otherwise it will fetch from sigarra
+
+        Returns:
+            A list of tuples
+
+        Example::
+
+            from feupy import CurricularUnit, Credentials
+            from pprint import pprint
+
+            mpcp = CurricularUnit(419989)
+
+            creds = Credentials()
+
+            pprint(mpcp.students(creds))
+            # You'll get something like this:
+            [
+                ...,
+                (Student(201812345), 'Ordinário', 1, 'Normal'),
+                ...
+            ]
         """
 
         data   = []
@@ -300,23 +371,11 @@ class CurricularUnit:
         return data
     
     def timetable(self, credentials : _Credentials.Credentials) -> list:
-        """Returns the current curricular unit timetable 
-        as a list of dictionaries if possible, otherwise returns None.
-        (see timetable.parse_current_timetable for more info)
-        Example:
-        [
-            {'class type': 'T',
-            'classes': ('1MIEIC01',
-                        '1MIEIC02',
-                        '1MIEIC09'),
-            'curricular unit': CurricularUnit(419989),
-            'finish': datetime.time(11, 0),
-            'room': ('B003',),
-            'start': datetime.time(10, 0),
-            'teachers': (Teacher(23545),),
-            'weekday': 'Friday'},
-            ...
-        ]
+        """Returns the curricular unit's current timetable as a list of dictionaries if possible, otherwise returns None.
+        (see :func:`timetable.parse_current_timetable` for more info)
+        
+        Returns:
+            A list of dicts
         """
         html = credentials.get_html(_utils.SIG_URLS["curricular unit timetable"], {"pv_ocorrencia_id" : self.pv_ocorrencia_id})
         soup = _bs4.BeautifulSoup(html, "lxml")
@@ -324,21 +383,14 @@ class CurricularUnit:
         return _timetable.parse_current_timetable(credentials, soup.a["href"])
     
     def all_timetables(self, credentials : _Credentials.Credentials) -> dict:
-        """Parses all the timetables related to this curricular unit.
-        Returns a dictionary which maps a tuple with two datetime.date objects,
-        start and finish (the time span in which this timetable is valid), to a
-        list of dictionaries (see timetable.parse_timetable for further info).
-        (see timetable.parse_timetables for further info)
-        An example:
-        {
-            (datetime.date(2019, 2, 10), datetime.date(2019, 6, 1)): [
-                {...},
-                {...},
-                {...},
-                ...
-            ],
-            ...
-        }
+        """Parses all the timetables related to this curricular unit
+        (see :obj:`timetable.parse_timetables` for further info).
+        
+        Returns:
+            A dictionary which maps a tuple with two :obj:`datetime.date` objects,
+            start and finish (the time span in which this timetable is valid), to a
+            list of dictionaries (see :obj:`timetable.parse_timetable` for an example
+            of such a list).
         """
         html = credentials.get_html(_utils.SIG_URLS["curricular unit timetable"], {"pv_ocorrencia_id" : self.pv_ocorrencia_id})
         soup = _bs4.BeautifulSoup(html, "lxml")
@@ -346,9 +398,39 @@ class CurricularUnit:
         return _timetable.parse_timetables(credentials, soup.a["href"])
 
     def other_occurrences(self, use_cache : bool = True) -> tuple:
-        """Returns a tuple of CurricularUnit objects,
-        which are occurrences of this object from other years.
-        The cache can be bypassed by setting use_cache to False.
+        """Returns the occurrences of this curricular unit from other years as a
+        tuple of :obj:`CurricularUnit` objects.
+
+        Args:
+            use_cache (:obj:`bool`, optional): Attempts use the cache if True, otherwise it will fetch from sigarra
+
+        Returns:
+            A tuple of :obj:`CurricularUnit` objects
+        
+        Example::
+
+            from feupy import CurricularUnit
+            from pprint import pprint
+
+            mpcp = CurricularUnit(419989)
+
+            pprint(mpcp.other_occurrences())
+            # You'll get something like this:
+            (CurricularUnit(436431),
+            CurricularUnit(419989),
+            CurricularUnit(399884),
+            CurricularUnit(384929),
+            CurricularUnit(368695),
+            CurricularUnit(350451),
+            CurricularUnit(333111),
+            CurricularUnit(272647),
+            CurricularUnit(272646),
+            CurricularUnit(272645),
+            CurricularUnit(272644),
+            CurricularUnit(272642),
+            CurricularUnit(272641),
+            CurricularUnit(272640),
+            CurricularUnit(272639))
         """
         html = _cache.get_html(self.url)
         soup = _bs4.BeautifulSoup(html, "lxml")
@@ -367,9 +449,28 @@ class CurricularUnit:
         return tuple(CurricularUnit.from_a_tag(a_tag) for a_tag in course_tags)
         
     def stats(self, credentials : _Credentials.Credentials) -> tuple:
-        """Returns a tuple of 3 ints: number of registered students,
-        number of evaluated students, and number of approved students.
-        A Credentials object is required.
+        """Returns a tuple with 3 ints:
+            0. number of registered students
+            1. number of evaluated students
+            2. number of approved students
+
+        Args:
+            credentials (:obj:`Credentials`): A :obj:`Credentials` object
+
+        Returns:
+            A tuple with 3 ints
+
+        Example::
+
+            from feupy import CurricularUnit, Credentials
+
+            mpcp = CurricularUnit(419989)
+
+            creds = Credentials()
+
+            print(mpcp.stats(creds))
+            # You'll get something like this:
+            (220, 185, 162)
         """
         
         html = credentials.get_html(_utils.SIG_URLS["curricular unit statistics"], params = {"pv_ocorrencia_id" : str(self.pv_ocorrencia_id)})
@@ -386,28 +487,44 @@ class CurricularUnit:
         return (registered, evaluated, approved)
     
     def grades_distribution(self, credentials : _Credentials.Credentials) -> dict:
-        """Returns a dictionary representing the distribution of the grades.
-        The dictionary maps the grade to the number of students who got
-        that grade. Here is an example of the output of this function:
-        {'RFC': 9,
-         'RFE': 17,
-         'RFF': 18,
-             5: 4,
-             6: 5,
-             7: 7,
-             8: 6,
-             9: 4,
-            10: 12,
-            11: 11,
-            12: 13,
-            13: 21,
-            14: 4,
-            15: 12,
-            16: 7,
-            17: 13,
-            18: 8,
-            19: 7,
-            20: 1}
+        """Returns the distribution of the grades as a dict.
+
+        Args:
+            credentials (:obj:`Credentials`): A :obj:`Credentials` object
+        
+        Returns:
+            A dictionary that maps the grade to the number of students that got that grade.
+
+        Example::
+        
+            from feupy import CurricularUnit, Credentials
+            from pprint import pprint
+
+            mpcp = CurricularUnit(419989)
+
+            creds = Credentials()
+
+            pprint(mpcp.grades_distribution(creds))
+            # You'll get something like this:
+            {'RFC': 9,
+            'RFE': 17,
+            'RFF': 18,
+                5: 4,
+                6: 5,
+                7: 7,
+                8: 6,
+                9: 4,
+                10: 12,
+                11: 11,
+                12: 13,
+                13: 21,
+                14: 4,
+                15: 12,
+                16: 7,
+                17: 13,
+                18: 8,
+                19: 7,
+                20: 1}
         """
 
         html = credentials.get_html(_utils.SIG_URLS["curricular unit grades distribution"], params = {"pv_ocorrencia_id" : str(self.pv_ocorrencia_id)})
@@ -436,22 +553,39 @@ class CurricularUnit:
 
     def statistics_history(self, credentials : _Credentials.Credentials) -> list:
         """Returns a list of tuples each representing an academic year.
-        Contents of a tuple:
-        (
-            academic year        (int)
-            registered students, (int)
-            evaluated students,  (int)
-            approved students,   (int)
-            evaluated students average grade,      (float)
-            evaluated students standard deviation, (float)
-            approved students  average grade,      (float)
-            approved students  standard deviation, (float)
-        )
 
-        Example of the output of this function:
-       [(2016, 208, 152, 120, 12.43, 3.75, 13.4,  2.5),
-        (2017, 203, 149, 113, 12.08, 3.08, 12.27, 3.0),
-        (2018, 203, 170, 133, 12.51, 3.76, 13.53, 2.76)]
+        Contents of a tuple:
+            0. academic year        (int)
+            1. registered students  (int)
+            2. evaluated students   (int)
+            3. approved students    (int)
+            4. evaluated students average grade       (float)
+            5. evaluated students standard deviation  (float)
+            6. approved students  average grade       (float)
+            7. approved students  standard deviation  (float)
+
+        Args:
+            credentials (:obj:`Credentials`): A :obj:`Credentials` object
+        
+        Returns:
+            A list of tuples
+
+        Example::
+
+            from feupy import CurricularUnit, Credentials
+            from pprint import pprint
+
+            mpcp = CurricularUnit(419989)
+
+            creds = Credentials()
+
+            pprint(mpcp.statistics_history(creds))
+
+            # You will get something like this:
+            [(2016, 208, 152, 120, 12.43, 3.75, 13.4,  2.5),
+             (2017, 203, 149, 113, 12.08, 3.08, 12.27, 3.0),
+             (2018, 203, 170, 133, 12.51, 3.76, 13.53, 2.76),
+             ... ]
         """
         
         html = credentials.get_html(_utils.SIG_URLS["curricular unit stats history"], params = {"pv_ocorrencia_id" : str(self.pv_ocorrencia_id), "pv_n_prev_alet" : "20"})
@@ -479,23 +613,42 @@ class CurricularUnit:
     
     def classes(self, credentials : _Credentials.Credentials, use_cache : bool = True) -> dict:
         """Returns a dictionary which maps a class name to a list of students
-        (the students of that class). Example:
-        {
-            '1MIEIC01': [Student(201800000),
-                         Student(201800001),
-                         Student(201800002),
-                         Student(201800003)],
-            '1MIEIC02': [Student(201800004),
-                         Student(201800005),
-                         Student(201800006),
-                         Student(201800007),
-                         Student(201800008),
-                         Student(201800009),
-                         Student(201800010),
-                         Student(201800011),
-                         Student(201800012)],
-            '...'     : [...]
-        }
+        (the students of that class).
+        
+        Args:
+            credentials (:obj:`Credentials`): A :obj:`Credentials` object
+            use_cache (:obj:`bool`, optional): Attempts use the cache if True, otherwise it will fetch from sigarra
+
+        Returns:
+            A dict
+
+        Example::
+
+            from feupy import CurricularUnit, Credentials
+            from pprint import pprint
+
+            mpcp = CurricularUnit(419989)
+
+            creds = Credentials()
+
+            pprint(mpcp.classes(creds))
+            # You'll get something like this:
+            {
+                '1MIEIC01': [Student(201800000),
+                             Student(201800001),
+                             Student(201800002),
+                             Student(201800003)],
+                '1MIEIC02': [Student(201800004),
+                             Student(201800005),
+                             Student(201800006),
+                             Student(201800007),
+                             Student(201800008),
+                             Student(201800009),
+                             Student(201800010),
+                             Student(201800011),
+                             Student(201800012)],
+                '...'     : [...]
+            }
         """
         html = credentials.get_html(_utils.SIG_URLS["curricular unit classes"], params = {"pv_ocorrencia_id" : str(self.pv_ocorrencia_id)}) # this html redirects us to the url we want
         soup = _bs4.BeautifulSoup(html, "lxml")
@@ -536,31 +689,60 @@ class CurricularUnit:
         return result
 
     def exams(self, use_cache : bool = True):
-        """Returns a list of dictionaries (See exams.exams() for further information)"""
+        """Returns a list of the exams of this curricular unit.
+        
+        Args:
+            use_cache (:obj:`bool`, optional): Attempts use the cache if True, otherwise it will fetch from sigarra
+
+        Returns:
+            A list of dictionaries (see :func:`exams.exams` for more information about the dictionaries)
+        """
         url = _utils.SIG_URLS["curricular unit exams"] + "?" + _urllib.parse.urlencode({"p_ocorr_id" : str(self.pv_ocorrencia_id)})
 
         return _exams.exams(url, use_cache)
 
     def results(self, credentials : _Credentials.Credentials, use_cache : bool = True) -> dict:
-        """Returns a dictionary which maps a string representing the exams season ('Época Normal (2ºS)'/'Época Recurso (2ºS)')
-        to a list of tuples with two values each. The first value is a Student object and the second value is the grade the student got.
-        Example:
-        {'Época Normal (2ºS)': [(Student(201800001), 10),
-                                (Student(201800002), 13),
-                                (Student(201800003), 10),
-                                (Student(201800004), 'RFE'),
-                                (Student(201800005), 'RFF'),
-                                (Student(201800006), 'RFF'),
-                                ...],
-        'Época Recurso (2ºS)': [(Student(201800008), 11),
-                                (Student(201800009), 7),
-                                (Student(201800010), 8),
-                                (Student(201800011), 8),
-                                (Student(201800012), 'RFE'),
-                                (Student(201800013), 13),
-                                (Student(201800014), 5),
-                                (Student(201800019), 'RFC'),
-                                ...]}
+        """Returns a dictionary which maps a string representing the exams season
+        ('Época Normal (2ºS)'/'Época Recurso (2ºS)') to a list of tuples.
+        
+        Each tuple in the list has two values:
+            1. student (:obj:`Student`)
+            2. grade (str or int)
+
+        Args:
+            credentials (:obj:`Credentials`): A :obj:`Credentials` object
+            use_cache (:obj:`bool`, optional): Attempts use the cache if True, otherwise it will fetch from sigarra
+
+        Returns:
+            A dict
+
+        Example::
+            
+            from feupy import CurricularUnit, Credentials
+            from pprint import pprint
+
+            mpcp = CurricularUnit(419989)
+
+            creds = Credentials()
+
+            pprint(mpcp.results(creds))
+            # You'll get something like this:
+            {'Época Normal (2ºS)': [(Student(201800001), 10),
+                                    (Student(201800002), 13),
+                                    (Student(201800003), 10),
+                                    (Student(201800004), 'RFE'),
+                                    (Student(201800005), 'RFF'),
+                                    (Student(201800006), 'RFF'),
+                                    ...],
+            'Época Recurso (2ºS)': [(Student(201800008), 11),
+                                    (Student(201800009), 7),
+                                    (Student(201800010), 8),
+                                    (Student(201800011), 8),
+                                    (Student(201800012), 'RFE'),
+                                    (Student(201800013), 13),
+                                    (Student(201800014), 5),
+                                    (Student(201800019), 'RFC'),
+                                    ...]}
         """
         html = credentials.get_html(_utils.SIG_URLS["curricular unit results"], params = {"pv_ocorr_id" : str(self.pv_ocorrencia_id)})
         soup = _bs4.BeautifulSoup(html, "lxml")
@@ -605,8 +787,26 @@ class CurricularUnit:
 
     @classmethod
     def from_url(cls, url : str, use_cache : bool = True):
-        """Scrapes the curricular unit webpage from the given url and returns a CurricularUnit object"""
+        """Scrapes the curricular webpage from the given url and returns a :obj:`CurricularUnit` object.
+
+        Args:
+            url (str): The url of the curricular unit's sigarra page
+            use_cache (:obj:`bool`, optional): Attempts use the cache if True, otherwise it will fetch from sigarra
         
+        Returns:
+            A :obj:`CurricularUnit` object
+
+        Example::
+        
+            from feupy import CurricularUnit
+
+            url = "https://sigarra.up.pt/feup/pt/ucurr_geral.ficha_uc_view?pv_ocorrencia_id=419989"
+            mpcp = CurricularUnit.from_url(url)
+
+            print(mpcp.name)
+            # Microprocessors and Personal Computers
+        """
+
         matches = _re.findall(r"pv_ocorrencia_id=(\d+)$", url)
         
         if len(matches) == 0:
@@ -618,8 +818,16 @@ class CurricularUnit:
     
     @classmethod
     def from_a_tag(cls, bs4_tag : _bs4.Tag, use_cache : bool = True):
-        """Scrapes the curricular unit webpage from the given anchor tag and returns a CurricularUnit object"""
+        """Scrapes the curricular unit webpage from the given :obj:`bs4.tag` object and returns a :obj:`CurricularUnit` object.
         
+        Args:
+            bs4_tag (:obj:`bs4.tag`):
+            use_cache (:obj:`bool`, optional): Attempts use the cache if True, otherwise it will fetch from sigarra
+        
+        Returns:
+            A :obj:`CurricularUnit` object
+        """
+
         if bs4_tag.name != "a":
             raise ValueError(f"from_a_tag() 'bs4_tag' argument must be an anchor tag, not '{bs4_tag.name}'")
         
