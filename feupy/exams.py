@@ -1,7 +1,3 @@
-"""
-Functions:
-    exams
-"""
 import datetime as _datetime
 
 import bs4 as _bs4
@@ -14,17 +10,88 @@ __all__ = ["exams"]
 
 def exams(url : str, use_cache : bool = True) -> list:
     """Returns a list of dictionaries.
-    Example of a dictionary:
 
-        {'curricular unit': CurricularUnit(420037),
-         'finish': datetime.datetime(2019, 9, 6, 20, 0),
-         'observations': 'Tenho um exame de outra disciplina marcado para esse horário e assim juntava os dois.\\r\\nJosé Luís Moura Borges\\r\\n',
-         'rooms': None, # A tuple of strings, if available
-         'season': 'Especial de Conclusão - SET-E-ESPECIAL',
-         'start': datetime.datetime(2019, 9, 6, 17, 0)}
-     
-    If a value is not available (like 'rooms', in this case), it will be set to none.
-    Important note: use_cache = True will only apply to the exams pages, not the curricular units in those exams pages.
+    Each dictionary represents an exam and has 6 keys:
+
+    =================== ==========================================================
+     key                 value                                                    
+    =================== ==========================================================
+     "curricular unit"   (:obj:`feupy.CurricularUnit`) The subject being evaluated      
+     "finish"            (:obj:`datetime.datetime`) The finish time of the exam   
+     "observations"      (str)                                                    
+     "rooms"             (tuple(str)) The rooms in which the exam will take place 
+     "season"            (str)                                                    
+     "start"             (:obj:`datetime.datetime`) The start time of the exam    
+    =================== ==========================================================
+    
+    Note:
+        If a value is not available, it will be set to None.
+    
+    Args:
+        url       (str): The url of the page with the exams to be parsed
+        use_cache (:obj:`bool`, optional): Attempts to use the cache if True, otherwise it will fetch from sigarra
+
+    Returns:
+        A list of tuples
+    
+    Example::
+
+        from feupy.exams import exams
+        from pprint import pprint
+
+        mieic_exams_url = "https://sigarra.up.pt/feup/pt/exa_geral.mapa_de_exames?p_curso_id=742"
+
+        pprint(exams(mieic_exams_url))
+        # You'll get something like this:
+        [{'curricular unit': CurricularUnit(420016),
+        'finish': datetime.datetime(2019, 9, 4, 12, 0),
+        'observations': 'Exame em comum com Mecanica.Exame em comum com o da Época '
+                        'de Conclusão de Curso',
+        'rooms': ('B222',),
+        'season': 'Exames ao abrigo de estatutos especiais - Port.Est.Especiais 2ºS',
+        'start': datetime.datetime(2019, 9, 4, 9, 0)},
+
+        {'curricular unit': CurricularUnit(419990),
+        'finish': datetime.datetime(2019, 9, 6, 17, 0),
+        'observations': 'Sala de exame - Em principio 2 alunos ',
+        'rooms': ('B222',),
+        'season': 'Exames ao abrigo de estatutos especiais - Port.Est.Especiais 2ºS',
+        'start': datetime.datetime(2019, 9, 6, 14, 0)},
+
+        {'curricular unit': CurricularUnit(420021),
+        'finish': datetime.datetime(2019, 9, 18, 17, 30),
+        'observations': 'Sala de exame - possivelmente 3 alunos ',
+        'rooms': None,
+        'season': 'Exames ao abrigo de estatutos especiais - Port.Est.Especiais 2ºS',
+        'start': datetime.datetime(2019, 9, 18, 14, 30)},
+
+        {'curricular unit': CurricularUnit(438941),
+        'finish': datetime.datetime(2019, 9, 25, 13, 0),
+        'observations': None,
+        'rooms': ('B104', 'B208', 'B213'),
+        'season': 'Exames ao abrigo de estatutos especiais - Mini-testes (1ºS)',
+        'start': datetime.datetime(2019, 9, 25, 9, 0)},
+
+        {'curricular unit': CurricularUnit(438941),
+        'finish': datetime.datetime(2019, 9, 25, 17, 30),
+        'observations': None,
+        'rooms': ('B104', 'B213', 'B208', 'B207'),
+        'season': 'Exames ao abrigo de estatutos especiais - Mini-testes (1ºS)',
+        'start': datetime.datetime(2019, 9, 25, 13, 30)},
+
+        {'curricular unit': CurricularUnit(438941),
+        'finish': datetime.datetime(2019, 9, 26, 13, 0),
+        'observations': None,
+        'rooms': ('B104', 'B208', 'B213'),
+        'season': 'Exames ao abrigo de estatutos especiais - Mini-testes (1ºS)',
+        'start': datetime.datetime(2019, 9, 26, 9, 0)},
+
+        {'curricular unit': CurricularUnit(438941),
+        'finish': datetime.datetime(2019, 9, 26, 17, 30),
+        'observations': None,
+        'rooms': ('B104', 'B213', 'B208', 'B207'),
+        'season': 'Exames ao abrigo de estatutos especiais - Mini-testes (1ºS)',
+        'start': datetime.datetime(2019, 9, 26, 13, 30)}]
     """
     html = _cache.get_html(url, use_cache = use_cache)
     soup = _bs4.BeautifulSoup(html, 'lxml')
