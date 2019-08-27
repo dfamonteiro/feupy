@@ -46,15 +46,10 @@ class Credentials:
         AUTH_FAIL = "O conjunto utilizador/senha não é válido." # If this string appears on the HTML answer, the login creds aren't valid:(
 
         if username == None:
-            username = int(input("Username?\n:> up"))
+            username = input("Username?\n:> up")
         if password == None:
             password = _getpass.getpass(f"Password for {username}?\n:> ")
         
-        if type(username) != int: # Making sure the arguments are strings
-            raise TypeError(f"login() 'username' argument must be an int, not '{type(username).__name__}'")
-        if type(password) != str:
-            raise TypeError(f"login() 'password' argument must be a string, not '{type(password).__name__}'")
-
         session = _requests.Session()
         credencials = {'p_user': username, 'p_pass': password}
         request = session.post(_utils.SIG_URLS["authentication"], params = credencials) # Sending the creds to sigarra
