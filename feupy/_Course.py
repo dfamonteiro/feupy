@@ -15,27 +15,16 @@ __all__ = ["Course"]
 class Course:
     """This class represents a course as seen from its sigarra webpage.
 
-    Properties:
-        pv_curso_id      (int) # e.g. 742
-        pv_ano_lectivo   (int) # e.g. 2018
-        url              (str) # e.g. 'https://sigarra.up.pt/feup/en/cur_geral.cur_view?pv_curso_id=742&pv_ano_lectivo=2018'
-        name             (str) # e.g. 'Master in Informatics and Computing Engineering'
-        official_code    (int) # e.g. 9459
-        directors        (tuple of Teacher objects) # e.g. (Teacher(210006), Teacher(209566))
-        acronym          (str) # e.g. 'MIEIC'
-        text             (str or None)
+    Args:
+        pv_curso_id      (int): The id of the course
+        pv_ano_lectivo   (int): The year of this course page
+        url              (str): Url of the course's sigarra page
+        name             (str): The name the course
+        official_code    (int): The official code
+        directors        (tuple(:obj:`Teacher`)): The directors of this course
+        acronym          (str): The acronym of this course
+        text             (str or None):
 
-    Methods:
-        from_url   (class method)
-        from_a_tag (class method)
-        classes
-        curricular_units
-        syllabus
-    
-    Operators:
-        __repr__, __str__
-        __eq__, __le__, __lt__, __ge__, __gt__ (Courses are sorted firstly by pv_curso_id and secondly by year)
-        __hash__
     """
     __slots__ = ["pv_curso_id","pv_ano_lectivo", "url", "name", "official_code", "directors", "acronym", "text"]
 
