@@ -11,34 +11,34 @@ from . import timetable as _timetable
 __all__ = ["User"]
 
 class User:
-    """This class represents the information that can be extracted
-    from your personal webpage.
+    """This class represents the information that can be extracted from your personal webpage.
+    
+    Args:
+        pv_fest_id (int): Your pv_fest_id. See :func:`User.get_pv_fest_ids` for a way
+            to get this value. If you are enrolled in only one course, then
+            :func:`User.from_credentials` may be more convenient for you
+        
+        credentials (:obj:`Credentials`): A :obj:`Credentials` object
 
-    Properties:
-        pv_fest_id      (int) # A sort of course specific student identification number.
-                              # See from_credentials() and get_pv_fest_ids() for ways to get
-                              # this number
-        course          (Course object) # The course related to this pv_fest_id
-        credentials     (Credentials object) # The credentials argument from the __init__ function
-                                             # (This is done to avoid having to pass the same
-                                             # Credentials object to every function)
+    Attributes:
+        pv_fest_id  (int): A sort of course specific student identification number
+        course      (:obj:`Course`): The course related to this pv_fest_id
+        credentials (:obj:`Credentials`): A :obj:`Credentials` object
+            (This is done to avoid having to pass the same :obj:`Credentials` object to every function)
 
-    Methods:
-        from_credentials (class  method)
-        get_pv_fest_ids  (static method)
-        courses_units
-        timetable
-        all_timetables
-        classes
+    Example::
+
+        from feupy import Credentials, User
+
+        creds = Credentials()
+
+        me = User(123456, creds)
     """
 
     __slots__ = ["pv_fest_id", "course", "credentials"]
 
     def __init__(self, pv_fest_id : int, credentials: _Credentials.Credentials):
-        """Parses your personal webpage. See User.get_pv_fest_ids() and User.from_credentials()
-        for ways to get your pv_fest_id. A pv_fest_id is like a "course specific student id",
-        from what I can tell.
-        """
+        
         self.pv_fest_id = pv_fest_id
         self.credentials = credentials # Note, this is only a reference
 
@@ -56,12 +56,29 @@ class User:
             raise Exception("No course was found")
 
     def courses_units(self) -> list:
-        """Returns a list of tuples. Each tuple contains a Curricular unit which represents
-        a curricular unit that you have had in a previous year or you currently enrolled in,
-        and either an int which represents the grade you got at that curricular unit or None
-        if a grade is not available.
+        """Returns your grades as a list of tuples.
+        
+        Each tuple has 2 elements:
+            0. A :obj:`CurricularUnit` object which represents a curricular unit that
+                you either have had in a previous year or you are currently enrolled in
+            1. Either an int which represents the grade you got at that curricular unit or None
+                if that grade is not available
 
-        Example:
+        Returns:
+            A list of tuples
+
+        Example::
+
+            from feupy import Credentials, User
+            from pprint import pprint
+
+
+            creds = Credentials()
+            me = User.from_credentials(creds)
+
+            pprint(me.courses_units())
+
+            # You will get something like this:
             [(CurricularUnit(419981), 10),
              (CurricularUnit(419982), 11),
              (CurricularUnit(419983), 12),
@@ -91,23 +108,11 @@ class User:
         return result
 
     def timetable(self) -> list:
-        """Returns the current user timetable 
-        as a list of dictionaries if possible, otherwise returns None.
-        (see timetable.parse_current_timetable for more info)
-        Example:
-        [
-            {'class type': 'T',
-            'classes': ('1MIEIC01',
-                        '1MIEIC02',
-                        '1MIEIC09'),
-            'curricular unit': CurricularUnit(419989),
-            'finish': datetime.time(11, 0),
-            'room': ('B003',),
-            'start': datetime.time(10, 0),
-            'teachers': (Teacher(23545),),
-            'weekday': 'Friday'},
-            ...
-        ]
+        """Returns the current user timetable as a list of dictionaries if possible, otherwise returns None.
+        (see :func:`timetable.parse_current_timetable` for more info)
+        
+        Returns:
+            A list of dicts
         """
         html = self.credentials.get_html(_utils.SIG_URLS["personal timetable"], {"pv_fest_id" : str(self.pv_fest_id)})
         soup = _bs4.BeautifulSoup(html, "lxml")
@@ -115,21 +120,15 @@ class User:
         return _timetable.parse_current_timetable(self.credentials, soup.a["href"])
     
     def all_timetables(self) -> dict:
-        """Parses all the timetables related to this user.
-        Returns a dictionary which maps a tuple with two datetime.date objects,
-        start and finish (the time span in which this timetable is valid), to a
-        list of dictionaries (see timetable.parse_timetable for further info).
-        (see timetable.parse_timetables for further info)
-        An example:
-        {
-            (datetime.date(2019, 2, 10), datetime.date(2019, 6, 1)): [
-                {...},
-                {...},
-                {...},
-                ...
-            ],
-            ...
-        }
+        """Parses all the timetables related to this user
+        (see :obj:`timetable.parse_timetables` for further info).
+        
+        Returns:
+            A dictionary which maps a tuple with two :obj:`datetime.date` objects,
+            start and finish (the time span in which this timetable is valid), to a
+            list of dictionaries (see :obj:`timetable.parse_timetable` for an example
+            of such a list).
+        
         """
         html = self.credentials.get_html(_utils.SIG_URLS["personal timetable"], {"pv_fest_id" : str(self.pv_fest_id)})
         soup = _bs4.BeautifulSoup(html, "lxml")
@@ -137,8 +136,14 @@ class User:
         return _timetable.parse_timetables(self.credentials, soup.a["href"])
 
     def classes(self):
-        """Returns a list of tuples, each tuple containing a CurricularUnit object
-        and the class name as a string.
+        """Returns the classes you are in as a list of tuples.
+        
+        Each tuple has 2 elements:
+            0. A :obj:`CurricularUnit` object
+            1. The class name as a string.
+        
+        Returns:
+            A list of tuples
         """
         raise NotImplementedError("No idea if this works or not")
         html = self.credentials.get_html(_utils.SIG_URLS["classes data"] , params = {"pv_estudante_id" : str(self.pv_fest_id)})
@@ -159,15 +164,36 @@ class User:
     @classmethod
     def from_credentials(cls, credentials: _Credentials.Credentials):
         """Returns a User object made from the first result from get_pv_fest_ids().
+
         Usually, students are enrolled in only one course, which means that
         get_pv_fest_ids() tends to be a tuple with a single int.
+
+        Args:
+            credentials (:obj:`Credentials`): A :obj:`Credentials` object
+        
+        Returns:
+            A :obj:`User` object
+        
+        Example::
+
+            from feupy import Credentials, User
+
+            creds = Credentials()
+            me = User.from_credentials(creds)
         """
         return User(User.get_pv_fest_ids(credentials)[0], credentials)
 
 
     @staticmethod
     def get_pv_fest_ids(credentials: _Credentials.Credentials) -> tuple:
-        """Returns a tuple of ints, each representing a pv_fest_id."""
+        """Returns a tuple of ints, each representing a pv_fest_id.
+        
+        Args:
+            credentials (:obj:`Credentials`): A :obj:`Credentials` object
+        
+        Returns:
+            A tuple of ints
+        """
         payload = {"pv_num_unico" : str(credentials.username)}
         html = credentials.get_html(_utils.SIG_URLS["student page"], payload)
     
