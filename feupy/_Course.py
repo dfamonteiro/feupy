@@ -18,7 +18,7 @@ class Course:
     Args:
         pv_curso_id (int): The id of the course, for example MIEIC's id is 742
         pv_ano_lectivo (:obj:`int`, optional): The year of this course. It defaults to the current year (i.e. 2019, at the time of writing)
-        use_cache (:obj:`bool`, optional): Attempts use the cache if True, otherwise it will fetch from sigarra
+        use_cache (:obj:`bool`, optional): Attempts to use the cache if True, otherwise it will fetch from sigarra
 
 
     Attributes:
@@ -148,7 +148,7 @@ class Course:
         a link are not included.
         
         Args:
-            use_cache (:obj:`bool`, optional): Attempts use the cache if True, otherwise it will fetch from sigarra
+            use_cache (:obj:`bool`, optional): Attempts to use the cache if True, otherwise it will fetch from sigarra
 
         Returns:
             A list of :obj:`CurricularUnit` objects
@@ -221,7 +221,7 @@ class Course:
             3. is mandatory (bool)
         
         Args:
-            use_cache (:obj:`bool`, optional): Attempts use the cache if True, otherwise it will fetch from sigarra
+            use_cache (:obj:`bool`, optional): Attempts to use the cache if True, otherwise it will fetch from sigarra
 
         Returns:
             A list of tuples
@@ -289,7 +289,7 @@ class Course:
         """Returns a list of the exams of this course.
         
         Args:
-            use_cache (:obj:`bool`, optional): Attempts use the cache if True, otherwise it will fetch from sigarra
+            use_cache (:obj:`bool`, optional): Attempts to use the cache if True, otherwise it will fetch from sigarra
 
         Returns:
             A list of dictionaries (see :func:`exams.exams` for more information about the dictionaries)
@@ -305,7 +305,7 @@ class Course:
 
         Args:
             url (str): The url of the course's sigarra page
-            use_cache (:obj:`bool`, optional): Attempts use the cache if True, otherwise it will fetch from sigarra
+            use_cache (:obj:`bool`, optional): Attempts to use the cache if True, otherwise it will fetch from sigarra
         
         Returns:
             A :obj:`Course` object
@@ -336,7 +336,7 @@ class Course:
         
         Args:
             bs4_tag (:obj:`bs4.tag`):
-            use_cache (:obj:`bool`, optional): Attempts use the cache if True, otherwise it will fetch from sigarra
+            use_cache (:obj:`bool`, optional): Attempts to use the cache if True, otherwise it will fetch from sigarra
         
         Returns:
             A :obj:`Course` object

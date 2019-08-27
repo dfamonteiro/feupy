@@ -19,7 +19,7 @@ class Teacher:
 
     Args:
         p_codigo (int): The id of the teacher
-        use_cache (:obj:`bool`, optional): Attempts use the cache if True, otherwise it will fetch from sigarra
+        use_cache (:obj:`bool`, optional): Attempts to use the cache if True, otherwise it will fetch from sigarra
 
 
     Attributes:
@@ -138,7 +138,7 @@ class Teacher:
 
         Args:
             url (str): The url of the teacher's sigarra page
-            use_cache (:obj:`bool`, optional): Attempts use the cache if True, otherwise it will fetch from sigarra
+            use_cache (:obj:`bool`, optional): Attempts to use the cache if True, otherwise it will fetch from sigarra
         
         Returns:
             A :obj:`Teacher` object
@@ -168,7 +168,7 @@ class Teacher:
         
         Args:
             bs4_tag (:obj:`bs4.tag`):
-            use_cache (:obj:`bool`, optional): Attempts use the cache if True, otherwise it will fetch from sigarra
+            use_cache (:obj:`bool`, optional): Attempts to use the cache if True, otherwise it will fetch from sigarra
         
         Returns:
             A :obj:`Teacher` object

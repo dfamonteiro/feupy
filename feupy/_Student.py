@@ -15,7 +15,7 @@ class Student:
 
     Args:
         username (int): The username of the student, e.g. 201806185
-        use_cache (:obj:`bool`, optional): Attempts use the cache if True, otherwise it will fetch from sigarra
+        use_cache (:obj:`bool`, optional): Attempts to use the cache if True, otherwise it will fetch from sigarra
 
     
     Attributes:
@@ -112,7 +112,7 @@ class Student:
 
         Args:
             url (str): The url of the student's sigarra page
-            use_cache (:obj:`bool`, optional): Attempts use the cache if True, otherwise it will fetch from sigarra
+            use_cache (:obj:`bool`, optional): Attempts to use the cache if True, otherwise it will fetch from sigarra
         
         Returns:
             A :obj:`Student` object
@@ -143,7 +143,7 @@ class Student:
         
         Args:
             bs4_tag (:obj:`bs4.tag`):
-            use_cache (:obj:`bool`, optional): Attempts use the cache if True, otherwise it will fetch from sigarra
+            use_cache (:obj:`bool`, optional): Attempts to use the cache if True, otherwise it will fetch from sigarra
         
         Returns:
             A :obj:`Student` object

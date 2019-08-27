@@ -19,7 +19,7 @@ class CurricularUnit:
 
     Args:
         pv_ocorrencia_id (int): The id of the curricular unit
-        use_cache (:obj:`bool`, optional): Attempts use the cache if True, otherwise it will fetch from sigarra
+        use_cache (:obj:`bool`, optional): Attempts to use the cache if True, otherwise it will fetch from sigarra
 
     Attributes:
         pv_ocorrencia_id   (int): The id of the curricular unit
@@ -306,7 +306,7 @@ class CurricularUnit:
         
         Args:
             credentials (:obj:`Credentials`): A :obj:`Credentials` object
-            use_cache (:obj:`bool`, optional): Attempts use the cache if True, otherwise it will fetch from sigarra
+            use_cache (:obj:`bool`, optional): Attempts to use the cache if True, otherwise it will fetch from sigarra
 
         Returns:
             A list of tuples
@@ -402,7 +402,7 @@ class CurricularUnit:
         tuple of :obj:`CurricularUnit` objects.
 
         Args:
-            use_cache (:obj:`bool`, optional): Attempts use the cache if True, otherwise it will fetch from sigarra
+            use_cache (:obj:`bool`, optional): Attempts to use the cache if True, otherwise it will fetch from sigarra
 
         Returns:
             A tuple of :obj:`CurricularUnit` objects
@@ -617,7 +617,7 @@ class CurricularUnit:
         
         Args:
             credentials (:obj:`Credentials`): A :obj:`Credentials` object
-            use_cache (:obj:`bool`, optional): Attempts use the cache if True, otherwise it will fetch from sigarra
+            use_cache (:obj:`bool`, optional): Attempts to use the cache if True, otherwise it will fetch from sigarra
 
         Returns:
             A dict
@@ -692,7 +692,7 @@ class CurricularUnit:
         """Returns a list of the exams of this curricular unit.
         
         Args:
-            use_cache (:obj:`bool`, optional): Attempts use the cache if True, otherwise it will fetch from sigarra
+            use_cache (:obj:`bool`, optional): Attempts to use the cache if True, otherwise it will fetch from sigarra
 
         Returns:
             A list of dictionaries (see :func:`exams.exams` for more information about the dictionaries)
@@ -711,7 +711,7 @@ class CurricularUnit:
 
         Args:
             credentials (:obj:`Credentials`): A :obj:`Credentials` object
-            use_cache (:obj:`bool`, optional): Attempts use the cache if True, otherwise it will fetch from sigarra
+            use_cache (:obj:`bool`, optional): Attempts to use the cache if True, otherwise it will fetch from sigarra
 
         Returns:
             A dict
@@ -791,7 +791,7 @@ class CurricularUnit:
 
         Args:
             url (str): The url of the curricular unit's sigarra page
-            use_cache (:obj:`bool`, optional): Attempts use the cache if True, otherwise it will fetch from sigarra
+            use_cache (:obj:`bool`, optional): Attempts to use the cache if True, otherwise it will fetch from sigarra
         
         Returns:
             A :obj:`CurricularUnit` object
@@ -822,7 +822,7 @@ class CurricularUnit:
         
         Args:
             bs4_tag (:obj:`bs4.tag`):
-            use_cache (:obj:`bool`, optional): Attempts use the cache if True, otherwise it will fetch from sigarra
+            use_cache (:obj:`bool`, optional): Attempts to use the cache if True, otherwise it will fetch from sigarra
         
         Returns:
             A :obj:`CurricularUnit` object
