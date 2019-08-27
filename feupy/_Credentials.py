@@ -30,7 +30,7 @@ class Credentials:
     """
     __slots__ = ["username", "session", "cache"]
 
-    def __init__(self, username : int = None, password : str = None):
+    def __init__(self, username = None, password : str = None):
         """Creates a Credentials object that can be used to access pages with priviledged access.
 
         Credentials(123456789, "password1") #This will obviously fail
