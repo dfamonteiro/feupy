@@ -15,38 +15,43 @@ class Credentials:
     features a non-persistent cache that stores htmls of urls
     previously accessed.
 
-    Properties:
-        username (int) # e.g. 201806185
-        session  (requests.Session object) # The session that has the login cookies
-        cache    (dict) # Maps a url string to an html string
-
-    Methods:
-        get_html
-        get_html_async
-        download
+    Args:
+        username (:obj:`int` or :obj:`str`, optional): Your username.
+            You will be prompted for your username if you don't pass a username as an argument
+        password (:obj:`str`, optional): Your password.
+            You will be prompted for your password if you don't pass a password as an argument
     
-    Operators:
-        __repr__
+    Attributes:
+        username (int or str): Your username (e.g. 201806185)
+        session  (:obj:`requests.Session`): A :obj:`requests.Session` object that holds the login cookies
+        cache    (dict): A dictionary that maps a url string to an html string
+
+    Example::
+
+        from feupy import Credentials
+
+        username = 201806185
+        password = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+
+        creds = Credentials(username, password)
+
+        # You may instead enter your username and password at runtime
+        creds = Credentials()
+        # Username?
+        # :> up201806185
+        # Password for 201806185?
+        # :>
     """
     __slots__ = ["username", "session", "cache"]
 
     def __init__(self, username = None, password : str = None):
-        """Creates a Credentials object that can be used to access pages with priviledged access.
-
-        Credentials(123456789, "password1") #This will obviously fail
-        ValueError: The login credencials aren't valid
-
-        For example, if you happen to be a student, you have privileged access to the course units you are taking.
-        If the function doesn't receive a password and/or a username, it will ask the user for them.
-        Note: username must be an int and password must a string.
-        """
 
         #This is a modified version of the https://github.com/msramalho/sigpy login function
 
         AUTH_FAIL = "O conjunto utilizador/senha não é válido." # If this string appears on the HTML answer, the login creds aren't valid:(
 
         if username == None:
-            username = input("Username?\n:> up")
+            username = input("Username?\n:> ")
         if password == None:
             password = _getpass.getpass(f"Password for {username}?\n:> ")
         
@@ -60,9 +65,18 @@ class Credentials:
         self.session  = session
         self.cache    = {}
     
-    def get_html(self, url : str, params : dict = {}):
-        """Functionally equivalent to requests.get(url, params).text,
-        with scripts and styles removed. The result is stored in cache.
+    def get_html(self, url : str, params : dict = {}) -> str:
+        """Functionally equivalent to ``requests.get(url, params).text``,
+        with scripts and styles removed. If the result is already in cache,
+        the method will just return the value from the cache instead of
+        making a web request.
+
+        Args:
+            url (str): The url of the html to be fetched
+            params (:obj:`dict`, optional): the query portion of the url, should you want to include a query
+        
+        Returns:
+            A string which is the html from the requested page url
         """
         if params != {}:
             url = url + "?" + _urllib.parse.urlencode(params, doseq = True) # Emulating the RequestsIII library
@@ -79,11 +93,19 @@ class Credentials:
         return self.cache[url]
 
     def get_html_async(self, urls, n_workers : int = 10):
-        """get_html, but async, give or take.
+        """:func:`Credentials.get_html`, but async, give or take.
+
         Takes a list (or any iterable) of urls and returns a corresponding generator of htmls.
         The htmls have their scripts and styles removed and are stored in cache.
-        """
 
+        Args:
+            urls (iterable(str)): The urls to be accessed
+            n_workers (:obj:`int`, optional): The number of workers.
+        
+        Returns:
+            An str generator
+        """
+        
         urls = tuple(urls)
 
         work_queue = (url for url in urls if url not in self.cache)
@@ -107,10 +129,17 @@ class Credentials:
         return (self.get_html(url) for url in urls)
     
     def download(self, url : str, folder_path : str) -> str:
-        """Downloads the file from the given url and saves it
-        to the given folder path. It returns the file path.
+        """Downloads the file from the given url and saves it to the given folder path.
         If the path doesn't exist, it will be created automatically.
-        Note: it only works with sigarra."""
+        
+        Args:
+            url (str): The url of the file to be downloaded
+            folder_path (str): The path of the folder you want to download the file to
+        
+        Returns:
+            The path of the file as an str
+
+        """
 
         # https://stackoverflow.com/questions/16694907/download-large-file-in-python-with-requests
         # https://stackoverflow.com/questions/31804799/how-to-get-pdf-filename-with-python-requests
