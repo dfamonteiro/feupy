@@ -128,7 +128,6 @@ class User:
             start and finish (the time span in which this timetable is valid), to a
             list of dictionaries (see :obj:`timetable.parse_timetable` for an example
             of such a list).
-        
         """
         html = self.credentials.get_html(_utils.SIG_URLS["personal timetable"], {"pv_fest_id" : str(self.pv_fest_id)})
         soup = _bs4.BeautifulSoup(html, "lxml")

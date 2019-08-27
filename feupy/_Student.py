@@ -24,7 +24,7 @@ class Student:
         personal_webpage (str): Url of the student's personal page, if present. Otherwise it is set to None
         username         (int): The student's "pv_num_unico"
         url              (str): Url of the student's sigarra page
-        courses          (tuple(dict)): The courses this student is enrolled in.
+        courses          (tuple(dict)): The courses this student is enrolled in
     
         Each dictionary from the courses tuple has 3 keys:
             - "course"              (a :obj:`Course` object or a string (if a link to a course wasn't available))
