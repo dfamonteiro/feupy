@@ -20,7 +20,7 @@ class Student:
     
     Attributes:
         name             (str): The name of the student
-        links            (tuple): Urls from the student page (including `Student.personal_webpage`, if present)
+        links            (tuple(str)): Urls from the student page (including :any:`Student.personal_webpage`, if present)
         personal_webpage (str): Url of the student's personal page, if present. Otherwise it is set to None
         username         (int): The student's "pv_num_unico"
         url              (str): Url of the student's sigarra page
