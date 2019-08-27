@@ -12,46 +12,47 @@ __all__ = ["Teacher"]
 class Teacher:
     """This class represents a FEUP teacher as seen from their sigarra webpage.
 
-    Please note that some attributes may be set to None, depending on whether or not
-    that attribute was able to be parsed. For example: personal_webpage, email, and
-    presentation are not always available in teacher pages.
+    Note:
+        Some attributes may be set to None, depending on whether or not
+        that attribute was able to be parsed. For example: personal_webpage, email, and
+        presentation are not always available in teacher pages.
 
-    Properties:
-        p_codigo         (int) # e.g. 230756
-        name             (str) # e.g. 'João António Correia Lopes'
-        acronym          (str) # e.g. 'JCL'
-        status           (str) # e.g. 'Active'
-        links            (tuple of strings) # e.g. ('http://www.fe.up.pt/~jlopes/', 'https://www.authenticus.pt/R-000-6RX', 'http://orcid.org/0000-0002-9040-0889')
-        personal_webpage (str) # e.g. 'http://www.fe.up.pt/~jlopes/'
-        url              (str) # e.g. 'https://sigarra.up.pt/feup/en/func_geral.formview?p_codigo=230756'
-        voip             (int) # e.g. 3375
-        email            (str) # e.g. None (This particular attribute could not be parsed from the page)
-        rooms            (str) # e.g. 'I129'
-        category         (str) # e.g. 'Professor Auxiliar'
-        career           (str) # e.g. 'Pessoal Docente de Universidades'
-        profession       (str) # e.g. 'Docente'
-        department       (str) # e.g. 'Department of Informatics Engineering'
-        presentation     (str) # e.g. 'Personal Presentation\\nJoão Correia Lopes is an Assistant Professor in Informatics Engineering...'
+    Attributes:
+        p_codigo         (int): The id of the teacher
+        name             (str): The name of the teacher
+        acronym          (str): The acronym of the teacher
+        status           (str): The status of the teacher
+        links            (tuple(str)): Urls from the teacher page (including :any:`Teacher.personal_webpage`, if present)
+        personal_webpage (str): Url of the teacher's personal page
+        url              (str): Url of the teacher's sigarra page
+        voip             (int)
+        email            (str)
+        rooms            (str)
+        category         (str)
+        career           (str)
+        profession       (str)
+        department       (str)
+        presentation     (str): The presentation of this teacher
 
-    Methods:
-        from_url   (class method)
-        from_a_tag (class method)
-        picture
-    
-    Operators:
-        __repr__, __str__
-        __eq__, __le__, __lt__, __ge__, __gt__ (Comparisons between teachers and hashing are made with the p_codigo)
-        __hash__
+    Example::
+
+        from feupy import Teacher
+
+        jlopes = Teacher(230756)
+
+        print(jlopes.name)
+        # João António Correia Lopes
+
+        print(jlopes.acronym)
+        # JCL
+
+        print(jlopes.personal_webpage)
+        # http://www.fe.up.pt/~jlopes/
     """
     __slots__ = ["p_codigo", "name", "acronym", "status", "links", "personal_webpage", "url", "voip",
                  "email", "rooms", "category", "career", "profession", "department", "presentation"]
 
     def __init__(self, p_codigo : int, use_cache : bool = True):
-        """Parses the webpage of the teacher with the given p_codigo.
-        The cache can be bypassed by setting use_cache to False.
-        If a given attribute can't be parsed (or is nonexistent),
-        it will be set to None.
-        """
 
         for attribute in self.__slots__:
             setattr(self, attribute, None)
@@ -118,14 +119,35 @@ class Teacher:
         if personal_presentation != None:
             self.presentation = personal_presentation.text.strip()
     
-    def picture(self) -> _PIL.Image:
-        """Returns a picture of the teacher as a PIL.Image object"""
+    def picture(self) -> _PIL.Image.Image:
+        """Returns a picture of the teacher as a :obj:`PIL.Image.Image` object.
+        
+        Returns:
+            A :obj:`PIL.Image.Image` object
+        """
         return _utils.get_image(_utils.SIG_URLS["picture"], {"pct_cod" : str(self.p_codigo)})
 
     @classmethod
     def from_url(cls, url : str, use_cache : bool = True):
-        """Scrapes the teacher webpage from the given url and returns a Teacher object"""
+        """Scrapes the teacher webpage from the given url and returns a :obj:`Teacher` object.
+
+        Args:
+            url (str): The url of the teacher's sigarra page
+            use_cache (:obj:`bool`, optional): Attempts use the cache if True, otherwise it will fetch from sigarra
         
+        Returns:
+            A :obj:`Teacher` object
+
+        Example::
+        
+            from feupy import Teacher
+
+            url = "https://sigarra.up.pt/feup/en/func_geral.formview?p_codigo=230756"
+            jlopes = Teacher.from_url(url)
+
+            print(jlopes.name)
+            # João António Correia Lopes
+        """        
         matches = _re.findall(r"p_codigo=(\d+)$", url)
         
         if len(matches) == 0:
@@ -137,8 +159,16 @@ class Teacher:
     
     @classmethod
     def from_a_tag(cls, bs4_tag : _bs4.Tag, use_cache : bool = True):
-        """Scrapes the teacher webpage from the given anchor tag and returns a Teacher object"""
+        """Scrapes the teacher webpage from the given :obj:`bs4.tag` object and returns a :obj:`Teacher` object.
         
+        Args:
+            bs4_tag (:obj:`bs4.tag`):
+            use_cache (:obj:`bool`, optional): Attempts use the cache if True, otherwise it will fetch from sigarra
+        
+        Returns:
+            A :obj:`Teacher` object
+        """
+
         if bs4_tag.name != "a":
             raise ValueError(f"from_a_tag() 'bs4_tag' argument must be an anchor tag, not '{bs4_tag.name}'")
         
