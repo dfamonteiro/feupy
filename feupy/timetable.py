@@ -1,9 +1,3 @@
-"""
-Functions:
-    parse_current_timetable
-    parse_timetables
-    parse_timetable
-"""
 import datetime as _datetime
 import functools as _functools
 import re as _re
@@ -26,10 +20,17 @@ _weekdays_pt = ("Segunda", "Terça", "Quarta",
 _weekdays_pt_to_en = {pt: en for pt, en in zip(_weekdays_pt, _weekdays)}
 
 
-def parse_current_timetable(credentials: _Credentials.Credentials, url: str) -> list:
-    """Attempts to parse the related timetable that is valid today.
+def parse_current_timetable(credentials: _Credentials.Credentials, url: str):
+    """Attempts to return the related timetable that is valid today as a list of dictionaries.
     If no timetable is valid today, it returns None.
-    (see parse_timetable for further info on the layout)
+    
+    Args:
+        credentials (:obj:`feupy.Credentials`): A :obj:`feupy.Credentials` object
+        url (str): The url of the timetable page
+
+    Returns:
+        A list of dicts (e.g. see :func:`parse_timetable`) or None
+
     """
     
     for (start, finish), url in _parse_side_bar(credentials, url).items():
@@ -40,20 +41,193 @@ def parse_current_timetable(credentials: _Credentials.Credentials, url: str) -> 
 
 
 def parse_timetables(credentials: _Credentials.Credentials, url: str) -> dict:
-    """Parses the timetables related to this timetable (including).
-    Returns a dictionary which maps a tuple with two datetime.date objects,
-    start and finish (the time span in which this timetable is valid), to a
-    list of dictionaries (see parse_timetable for further info).
-    An example:
-    {
-        (datetime.date(2019, 2, 10), datetime.date(2019, 6, 1)): [
-            {...},
-            {...},
-            {...},
-            ...
-        ],
-        ...
-    }
+    """Returns the timetables related to this timetable (including) as a dictionary.
+
+    Args:
+        credentials (:obj:`feupy.Credentials`): A :obj:`feupy.Credentials` object
+        url (str): The url of the timetable page
+
+    Returns:
+        A dictionary which maps a tuple with two :obj:`datetime.date` objects,
+        start and finish (the time span in which this timetable was/is valid), to a
+        list of dictionaries (e.g. see :func:`parse_timetable`).
+
+    Example::
+
+        from feupy import timetable, Credentials
+        from pprint import pprint
+
+        timetable_url = "https://sigarra.up.pt/feup/pt/hor_geral.turmas_view?pv_turma_id=207783&pv_periodos=1&pv_ano_lectivo=2017"
+        creds = Credentials()
+
+        pprint(timetable.parse_timetables(creds, timetable_url))
+        # You'll get something like this:
+        {(datetime.date(2017, 9, 24), datetime.date(2017, 10, 28)): [{'class type': 'TP',
+                                                                    'classes': ('1MIEIC01',),
+                                                                    'curricular unit': CurricularUnit(399800),
+                                                                    'finish': datetime.time(11, 0),
+                                                                    'room': ('B232A',),
+                                                                    'start': datetime.time(9, 0),
+                                                                    'teachers': (Teacher(212345),),
+                                                                    'weekday': 'Monday'},
+                                                                    {'class type': 'T',
+                                                                    'classes': ('1MIEIC01',
+                                                                                '1MIEIC02',
+                                                                                '1MIEIC03',
+                                                                                '1MIEIC04',
+                                                                                '1MIEIC05',
+                                                                                '1MIEIC06',
+                                                                                '1MIEIC07',
+                                                                                '1MIEIC08'),
+                                                                    'curricular unit': CurricularUnit(399800),
+                                                                    'finish': datetime.time(13, 0),
+                                                                    'room': ('B003',),
+                                                                    'start': datetime.time(11, 0),
+                                                                    'teachers': (Teacher(212345),),
+                                                                    'weekday': 'Monday'},
+                                                                    {'class type': 'T',
+                                                                    'classes': ('1MIEIC01',
+                                                                                '1MIEIC02',
+                                                                                '1MIEIC03',
+                                                                                '1MIEIC04',
+                                                                                '1MIEIC05',
+                                                                                '1MIEIC06',
+                                                                                '1MIEIC07',
+                                                                                '1MIEIC08'),
+                                                                    'curricular unit': CurricularUnit(399800),
+                                                                    'finish': datetime.time(10, 0),
+                                                                    'room': ('B001',),
+                                                                    'start': datetime.time(8, 30),
+                                                                    'teachers': (Teacher(212345),
+                                                                                Teacher(212345)),
+                                                                    'weekday': 'Tuesday'},
+                                                                    {'class type': 'T',
+                                                                    'classes': ('1MIEIC01',
+                                                                                '1MIEIC02',
+                                                                                '1MIEIC03',
+                                                                                '1MIEIC04',
+                                                                                '1MIEIC05',
+                                                                                '1MIEIC06',
+                                                                                '1MIEIC07',
+                                                                                '1MIEIC08'),
+                                                                    'curricular unit': CurricularUnit(399800),
+                                                                    'finish': datetime.time(11, 30),
+                                                                    'room': ('B001',),
+                                                                    'start': datetime.time(10, 0),
+                                                                    'teachers': (Teacher(212345),),
+                                                                    'weekday': 'Tuesday'},
+                                                                    {'class type': 'TP',
+                                                                    'classes': ('1MIEIC02',),
+                                                                    'curricular unit': CurricularUnit(399800),
+                                                                    'finish': datetime.time(13, 30),
+                                                                    'room': ('B110',),
+                                                                    'start': datetime.time(11, 30),
+                                                                    'teachers': (Teacher(212345),),
+                                                                    'weekday': 'Tuesday'},
+                                                                    {'class type': 'T',
+                                                                    'classes': ('1MIEIC01',
+                                                                                '1MIEIC02',
+                                                                                '1MIEIC03',
+                                                                                '1MIEIC04',
+                                                                                '1MIEIC05',
+                                                                                '1MIEIC06',
+                                                                                '1MIEIC07',
+                                                                                '1MIEIC08'),
+                                                                    'curricular unit': CurricularUnit(399800),
+                                                                    'finish': datetime.time(10, 0),
+                                                                    'room': ('B001',),
+                                                                    'start': datetime.time(8, 30),
+                                                                    'teachers': (Teacher(212345),),
+                                                                    'weekday': 'Wednesday'},
+                                                                    {'class type': 'T',
+                                                                    'classes': ('1MIEIC01',
+                                                                                '1MIEIC02',
+                                                                                '1MIEIC03',
+                                                                                '1MIEIC04',
+                                                                                '1MIEIC05',
+                                                                                '1MIEIC06',
+                                                                                '1MIEIC07',
+                                                                                '1MIEIC08'),
+                                                                    'curricular unit': CurricularUnit(399800),
+                                                                    'finish': datetime.time(11, 30),
+                                                                    'room': ('B001',),
+                                                                    'start': datetime.time(10, 0),
+                                                                    'teachers': (Teacher(212345),
+                                                                                Teacher(212345)),
+                                                                    'weekday': 'Wednesday'},
+                                                                    {'class type': 'TP',
+                                                                    'classes': ('1MIEIC03',),
+                                                                    'curricular unit': CurricularUnit(399800),
+                                                                    'finish': datetime.time(13, 30),
+                                                                    'room': ('B205',),
+                                                                    'start': datetime.time(11, 30),
+                                                                    'teachers': (Teacher(212345),),
+                                                                    'weekday': 'Wednesday'},
+                                                                    ... ],
+        (datetime.date(2017, 10, 29), datetime.date(2017, 11, 4)): [{'class type': 'TP',
+                                                                    'classes': ('1MIEIC04',),
+                                                                    'curricular unit': CurricularUnit(399800),
+                                                                    'finish': datetime.time(11, 0),
+                                                                    'room': ('B232A',),
+                                                                    'start': datetime.time(9, 0),
+                                                                    'teachers': (Teacher(212345),),
+                                                                    'weekday': 'Monday'},
+                                                                    {'class type': 'T',
+                                                                    'classes': ('1MIEIC01',
+                                                                                '1MIEIC02',
+                                                                                '1MIEIC03',
+                                                                                '1MIEIC04',
+                                                                                '1MIEIC05',
+                                                                                '1MIEIC06',
+                                                                                '1MIEIC07',
+                                                                                '1MIEIC08'),
+                                                                    'curricular unit': CurricularUnit(399800),
+                                                                    'finish': datetime.time(13, 0),
+                                                                    'room': ('B003',),
+                                                                    'start': datetime.time(11, 0),
+                                                                    'teachers': (Teacher(212345),),
+                                                                    'weekday': 'Monday'},
+                                                                    {'class type': 'T',
+                                                                    'classes': ('1MIEIC01',
+                                                                                '1MIEIC02',
+                                                                                '1MIEIC03',
+                                                                                '1MIEIC04',
+                                                                                '1MIEIC05',
+                                                                                '1MIEIC06',
+                                                                                '1MIEIC07',
+                                                                                '1MIEIC08'),
+                                                                    'curricular unit': CurricularUnit(399800),
+                                                                    'finish': datetime.time(10, 0),
+                                                                    'room': ('B001',),
+                                                                    'start': datetime.time(8, 30),
+                                                                    'teachers': (Teacher(212345),
+                                                                                Teacher(212345)),
+                                                                    'weekday': 'Tuesday'},
+                                                                    {'class type': 'T',
+                                                                    'classes': ('1MIEIC01',
+                                                                                '1MIEIC02',
+                                                                                '1MIEIC03',
+                                                                                '1MIEIC04',
+                                                                                '1MIEIC05',
+                                                                                '1MIEIC06',
+                                                                                '1MIEIC07',
+                                                                                '1MIEIC08'),
+                                                                    'curricular unit': CurricularUnit(399800),
+                                                                    'finish': datetime.time(11, 30),
+                                                                    'room': ('B001',),
+                                                                    'start': datetime.time(10, 0),
+                                                                    'teachers': (Teacher(212345),),
+                                                                    'weekday': 'Tuesday'},
+                                                                    {'class type': 'TP',
+                                                                    'classes': ('1MIEIC06',),
+                                                                    'curricular unit': CurricularUnit(399800),
+                                                                    'finish': datetime.time(13, 30),
+                                                                    'room': ('B110',),
+                                                                    'start': datetime.time(11, 30),
+                                                                    'teachers': (Teacher(212345),),
+                                                                    'weekday': 'Tuesday'},
+                                                                    ...]
+        }
     """
     result = _parse_side_bar(credentials, url)
 
@@ -91,22 +265,102 @@ def _parse_side_bar(credentials: _Credentials.Credentials, url: str) -> dict:
 
 def parse_timetable(credentials: _Credentials.Credentials, url: str) -> list:
     """Parses the events (including overlaps) of the timetable
-    with the given url. Returns a list of dictionaries, each
-    representing an event.
-    An example:
-    [
+    with the given url as a list of dictionaries.
+    
+    Each dictionary represents an timetable event (a class) and has 8 keys:
+
+    =================== ==========================================================
+     key                 value                                                    
+    =================== ==========================================================
+     "class type"        (str) E.g. "T", "TP", etc.
+     "classes"           (tuple(str)) The classes that are being taught
+     "curricular unit"   (:obj:`feupy.CurricularUnit`) The subject being teached
+     "finish"            (:obj:`datetime.time`) The finish time of the event
+     "room"              (tuple(str)) The rooms in which the event will take place
+     "start"             (:obj:`datetime.time`) The start time of the event
+     "teachers"          (tuple(:obj:`feupy.Teacher`))
+     "weekday"           (str)
+    =================== ==========================================================
+    
+    Args:
+        credentials (:obj:`feupy.Credentials`): A :obj:`feupy.Credentials` object
+        url (str): The url of the timetable page
+
+    Returns:
+        A list of dicts
+    
+    Example::
+    
+        from feupy import timetable, Credentials
+        from pprint import pprint
+
+        timetable_url = "https://sigarra.up.pt/feup/pt/hor_geral.turmas_view?pv_turma_id=207783&pv_periodos=1&pv_ano_lectivo=2017"
+        creds = Credentials()
+
+        pprint(timetable.parse_timetable(creds, timetable_url))
+        # You'll get something like this:
+        [{'class type': 'TP',
+        'classes': ('1MIEIC01',),
+        'curricular unit': CurricularUnit(399999),
+        'finish': datetime.time(11, 0),
+        'room': ('B232A',),
+        'start': datetime.time(9, 0),
+        'teachers': (Teacher(212345),),
+        'weekday': 'Monday'},
         {'class type': 'T',
-         'classes': ('1MIEIC01',
-                     '1MIEIC02',
-                     '1MIEIC09'),
-         'curricular unit': CurricularUnit(419989),
-         'finish': datetime.time(11, 0),
-         'room': ('B003',),
-         'start': datetime.time(10, 0),
-         'teachers': (Teacher(23545),),
-         'weekday': 'Friday'},
-         ...
-    ]
+        'classes': ('1MIEIC01',
+                    '1MIEIC02',
+                    '1MIEIC03',
+                    '1MIEIC04',
+                    '1MIEIC05',
+                    '1MIEIC06',
+                    '1MIEIC07',
+                    '1MIEIC08'),
+        'curricular unit': CurricularUnit(399999),
+        'finish': datetime.time(13, 0),
+        'room': ('B003',),
+        'start': datetime.time(11, 0),
+        'teachers': (Teacher(212345),),
+        'weekday': 'Monday'},
+        {'class type': 'T',
+        'classes': ('1MIEIC01',
+                    '1MIEIC02',
+                    '1MIEIC03',
+                    '1MIEIC04',
+                    '1MIEIC05',
+                    '1MIEIC06',
+                    '1MIEIC07',
+                    '1MIEIC08'),
+        'curricular unit': CurricularUnit(399999),
+        'finish': datetime.time(10, 0),
+        'room': ('B001',),
+        'start': datetime.time(8, 30),
+        'teachers': (Teacher(212345), Teacher(212345)),
+        'weekday': 'Tuesday'},
+        {'class type': 'T',
+        'classes': ('1MIEIC01',
+                    '1MIEIC02',
+                    '1MIEIC03',
+                    '1MIEIC04',
+                    '1MIEIC05',
+                    '1MIEIC06',
+                    '1MIEIC07',
+                    '1MIEIC08'),
+        'curricular unit': CurricularUnit(399999),
+        'finish': datetime.time(11, 30),
+        'room': ('B001',),
+        'start': datetime.time(10, 0),
+        'teachers': (Teacher(212345),),
+        'weekday': 'Tuesday'},
+        {'class type': 'TP',
+        'classes': ('1MIEIC02',),
+        'curricular unit': CurricularUnit(399999),
+        'finish': datetime.time(13, 30),
+        'room': ('B110',),
+        'start': datetime.time(11, 30),
+        'teachers': (Teacher(212345),),
+        'weekday': 'Tuesday'},
+        ... ]
     """
     try:
         weeks_url_query = re.findall(r"&p_semana_inicio=\d+&p_semana_fim=\d+$", url)[0]
