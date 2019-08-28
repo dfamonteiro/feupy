@@ -1,10 +1,16 @@
-"""
-Functions:
-    load_cache
-    get_html
-    reset
-    remove_invalid_entries
-    get_html_async
+"""Caching utilities
+
+Attributes:
+    cache (:obj:`shelve.DbfilenameShelf` or None (Initially, see :func:`load_cache`)): A persistent dictionary-like object whose values are structured in the following way:
+        
+        | {
+        |     url0 : (timeout0, html0),
+        |     url1 : (timeout1, html1),
+        |     ...
+        | }
+
+        In which url is a string, timeout is an int or a float (which represents the "due by date" as seconds since epoch), and html is a string
+
 """
 import atexit as _atexit
 import datetime as _datetime
@@ -113,14 +119,25 @@ _custom_treatments = {
 }
 
 def load_cache(flag = "c", path = None):
-    """Loads the cache from disk and stores it in the variable cache. 
-    If the variable cache is different than None, the function will do nothing.
+    """Loads the cache from disk and stores it in the variable :data:`cache`. 
+    If :data:`cache` is different than None, the function will do nothing.
 
-    Refer to this to know what the flag parameter does:
-    https://docs.python.org/3/library/dbm.html#dbm.open
+    Args:
+        flag (:obj:`str`, optional): The flag parameter, see https://docs.python.org/3/library/dbm.html#dbm.open
+        path (:obj:`str` or :obj:`None`, optional): The path of the directory where the cache is stored.
+            It defaults to this file's folder path
+    
+    Note:
+        Unless you intend to call :func:`load_cache` with non-default arguments,
+        you don't have to call this function. The other functions in this module
+        check whether or not the cache has been loaded and will load the cache for
+        you.
 
-    If you wish to save the cache to a folder of your chooosing, 
-    set path to an existing directory path.
+    Example::
+            
+        from feupy import cache
+        cache.load_cache()
+
     """
     global cache
 
@@ -130,10 +147,10 @@ def load_cache(flag = "c", path = None):
     if path == None:
         path = _os.path.dirname(__file__)
     
-    cache = _shelve.open(_os.path.join(path, "cache"), flag = flag)
+    cache = _shelve.open(_os.path.join(path, "cache"), flag = flag, writeback = True)
     
     _atexit.register(cache.close) # This function will be called at program termination, in order to make sure that the cache is saved to disk
-    # the cache object itself would most likely save itself on exit, but better be safe than sorry
+    # the cache object itself would most likely close itself on exit, but better be safe than sorry
 
 def _random_radioactive_lifetime(half_life = _datetime.timedelta(days=2), cutoff = True):
     """Returns a randomly generated lifetime of a radioactive particle with a half-life of half_life seconds
@@ -163,16 +180,29 @@ def _cache_entry_is_valid(key):
     return cache[key][0] > _time.time()
 
 def get_html(url, params = {}, use_cache = True):
-    """More or less functionally equivalent to requests.get(url, params).text, with the added
+    """More or less functionally equivalent to ``requests.get(url, params).text``, with the added
     benefit of a persistent cache with customizable html treatment and timeouts, depending on the url.
+    If the result is already in cache and is valid, the function will just return the value from the
+    cache instead of making a web request.
     
-    The curricular units' pages, along with the students' and teachers' pages,
-    are modified to reduce their memory footprint. The default treatment removes scripts
-    and styles from the html to also reduce their size. If you wish to bypass the cache, set
-    use_cache to False, (please note that the html modifications will still be made either way).
+    Args:
+        url (str): The url of the html to be fetched
+        params (:obj:`dict`, optional): the query portion of the url, should you want to include a query
+        use_cache(:obj:`bool`, optional): If this value is set to True, the cache will be checked
+            for the url. If the url is not found in the cache keys or has timed out, the function
+            will get the html from the web, remove scripts and styles from the html, store it in cache,
+            and finally return the html. Otherwise, if it's set to False, the cache will not be checked
 
-    Helpful note: if you know that you are going to make a crapton of requests beforehand, you probably
-    should call get_html_async first to populate the cache.
+    Returns:
+        A string which is the html from the requested page url
+
+    Note:
+        The curricular units' pages, along with the students' and teachers' htmls,
+        are modified to reduce their memory footprint.
+
+    Note: 
+        If you know that you are going to make a crapton of requests beforehand, you probably
+        should call :func:`get_html_async` first to populate the cache.
     """
     global cache
 
@@ -208,7 +238,13 @@ def reset():
     cache.clear()
 
 def remove_invalid_entries(urls = None):
-    """Removes all the cache entries in urls that have timed out"""
+    """Removes all the cache entries in urls that have timed out.
+    
+    Args:
+        urls (:obj:`iterable(str)` or :obj:`None`, optional): The urls to be checked. If this argument
+            is left untouched, all urls in the cache will be checked
+    
+    """
     global cache
 
     if cache == None:
@@ -227,9 +263,18 @@ def remove_invalid_entries(urls = None):
         cache.pop(url)
 
 def get_html_async(urls, n_workers = 10, use_cache = True):
-    """get_html, but async, give or take.
+    """:func:`get_html`, but async, give or take.
+
     Takes a list (or any iterable) of urls and returns a corresponding generator of htmls.
     The htmls have their scripts and styles removed and are stored in cache.
+
+    Args:
+        urls (iterable(str)): The urls to be accessed
+        n_workers (:obj:`int`, optional): The number of workers.
+        use_cache (:obj:`bool`, optional): Attempts to use the cache if True, otherwise it will fetch from sigarra
+        
+    Returns:
+      An str generator
     """
     global cache
 
