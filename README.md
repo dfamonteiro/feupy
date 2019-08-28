@@ -1,6 +1,7 @@
 # The sigarra scraping library no one asked for
 [![image](https://img.shields.io/pypi/v/feupy)](https://pypi.org/project/feupy/)
 [![image](https://img.shields.io/pypi/status/feupy)](https://pypi.org/project/feupy/)
+[![Documentation Status](https://readthedocs.org/projects/feupy/badge/?version=master)](https://feupy.readthedocs.io/en/master/?badge=master)
 [![image](https://img.shields.io/pypi/pyversions/feupy.svg)](https://pypi.org/project/feupy/)
 
 **Feupy** is a Python library that provides an interface to [FEUP](https://sigarra.up.pt/feup/en/WEB_PAGE.INICIAL "FEUP's Homepage")'s information system, [SIGARRA](https://sigarra.up.pt/up/en/web_page.inicial "SIGARRA's Homepage"). SIGARRA stands for **S**istema de **I**nformação para **G**estão **A**gregada dos **R**ecursos e dos **R**egistos **A**cadémicos (Academic Register and Aggregated Resource Management Information System, give or take).
