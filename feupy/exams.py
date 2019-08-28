@@ -32,7 +32,7 @@ def exams(url : str, use_cache : bool = True) -> list:
         use_cache (:obj:`bool`, optional): Attempts to use the cache if True, otherwise it will fetch from sigarra
 
     Returns:
-        A list of tuples
+        A list of dictionaries
     
     Example::
 
