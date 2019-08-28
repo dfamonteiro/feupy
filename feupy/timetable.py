@@ -78,15 +78,15 @@ def _parse_side_bar(credentials: _Credentials.Credentials, url: str) -> dict:
         finish = _datetime.date(finish_year, finish_month, finish_day)
 
         return {(start, finish) : url}
-        
+    
+    academic_year = int(_re.findall(r"pv_ano_lectivo=(\d\d\d\d)", url)[0])
 
     # Only the rows that have links have timetables that we have to parse
     timetable_tags = timetables_links_table.find_all("a")
 
     result = {}
     for tag in timetable_tags:
-        result[_parse_dates(tag.string)] = _utils.BASE_URL_PT + tag["href"]
-
+        result[_parse_dates(tag.string, academic_year)] = _utils.BASE_URL_PT + tag["href"]
     return result
 
 def parse_timetable(credentials: _Credentials.Credentials, url: str) -> list:
@@ -255,15 +255,15 @@ def _parse_rooms(credentials: _Credentials.Credentials, a: _bs4.Tag) -> tuple:
         raise Exception(f"unrecognized url: {url}")
 
 
-def _parse_dates(dates_string):
+def _parse_dates(dates_string, academic_year : int):
     result = []
     for date_str in dates_string.split("a"):
         day, month = map(int, date_str.split("-"))
 
         if month >= 9:  # 9 -> September
-            year = _utils.get_current_academic_year()
+            year = academic_year
         else:
-            year = _utils.get_current_academic_year() + 1
+            year = academic_year + 1
         result.append(_datetime.date(year, month, day))
 
     return tuple(result)
