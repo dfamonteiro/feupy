@@ -126,11 +126,15 @@ def _parse_exam_page(url : str):
 
     start = _datetime.datetime(year, month, day, start_hour, start_minute)
 
-    length_hour, length_minute = map(int, length.find_all("td")[1].string.split(":"))
+    try:
+        length_hour, length_minute = map(int, length.find_all("td")[1].string.split(":"))
 
-    delta = _datetime.timedelta(hours = length_hour, minutes = length_minute)
+        delta = _datetime.timedelta(hours = length_hour, minutes = length_minute)
 
-    finish = start + delta
+        finish = start + delta
+
+    except AttributeError:
+        finish = None
 
     rooms = observations = None
     for row in rows[6:]:
