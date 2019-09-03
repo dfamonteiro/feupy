@@ -285,26 +285,27 @@ def get_html_async(urls, n_workers = 10, use_cache = True):
 
     remove_invalid_entries(urls)
 
-    work_queue = (url for url in urls if url not in cache or not use_cache)
+    work_queue = [url for url in urls if url not in cache or not use_cache]
 
-    with _sessions.FuturesSession(max_workers = n_workers) as session:
-        
-        futures = [session.get(url) for url in work_queue]
-
-        for future in futures:
-            request = future.result()
-
-            if request.status_code != 200:
-                continue # GTFO
+    if len(work_queue) > 0:
+        with _sessions.FuturesSession(max_workers = n_workers) as session:
             
-            url  = request.url
-            html = request.text
+            futures = [session.get(url) for url in work_queue]
 
-            for match_rule, custom_treatment in _custom_treatments.items(): # Can we apply any custom treatment to the html?
-                if match_rule(url):
-                    cache[url] = custom_treatment(html)
-                    break
-            else:                                                         # If not, use the default treatment
-                cache[url] = _default_treatment(html)
+            for future in futures:
+                request = future.result()
+
+                if request.status_code != 200:
+                    continue # GTFO
+                
+                url  = request.url
+                html = request.text
+
+                for match_rule, custom_treatment in _custom_treatments.items(): # Can we apply any custom treatment to the html?
+                    if match_rule(url):
+                        cache[url] = custom_treatment(html)
+                        break
+                else:                                                         # If not, use the default treatment
+                    cache[url] = _default_treatment(html)
     
     return (get_html(url) for url in urls)
