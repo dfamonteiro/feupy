@@ -8,5 +8,6 @@ exclude feupy/cache.dir
 global-exclude __pycache__
 global-exclude *.py[co]
 
+include requirements.txt
 include README.md
 include LICENSE
