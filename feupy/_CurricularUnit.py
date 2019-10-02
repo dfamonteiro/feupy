@@ -138,7 +138,7 @@ class CurricularUnit:
         third_table = _utils.scrape_html_table(third_table)
         third_table.pop(0) # We don't care about the header row
 
-        n_students = (int(row[1]) for row in third_table)
+        n_students = (int(row[1]) for row in third_table if len(row) >= 2)
         self.number_of_students = sum(n_students)
 
         self.curricular_year = int(third_table[0][3])
