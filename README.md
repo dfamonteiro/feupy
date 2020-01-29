@@ -294,7 +294,7 @@ ResearcherID  ORCID  Google Scholar Citations  DBLP Author  Scopus Author
 {'acronym': 'MIEIC',
  'directors': (Teacher(210006), Teacher(209566)),
  'name': 'Master in Informatics and Computing Engineering',
- 'official_code': 9459,
+ 'official_code': '9459',
  'pv_ano_lectivo': 2019,
  'pv_curso_id': 742,
  'text': 'The Integrated Master in Informatics and Computing Engineering has '

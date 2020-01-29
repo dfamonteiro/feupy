@@ -26,7 +26,7 @@ class Course:
         pv_ano_lectivo   (int): The year of this course's page
         url              (str): Url of the course's sigarra page
         name             (str): The name the course
-        official_code    (int): The official code
+        official_code    (str): The official code
         directors        (tuple(:obj:`Teacher`)): The directors of this course
         acronym          (str): The acronym of this course
         text             (str or None): The text that can be found in the course's page
@@ -84,7 +84,7 @@ class Course:
                 self.acronym = row.find_all("td")[1].string
             
             elif "Official Code:" in str(row):
-                self.official_code = int(row.find_all("td")[1].string)
+                self.official_code = row.find_all("td")[1].string
         
         try:
             self.text = contents.find("div", {"class" : "col-md-8 col-sm-6 col-xs-12"}).text
