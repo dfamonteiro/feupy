@@ -13,13 +13,13 @@ BASE_URL    = "https://sigarra.up.pt/feup/en/"
 BASE_URL_PT = "https://sigarra.up.pt/feup/pt/" # Some pages don't have an english translation, such as "personal timetable"
 SIG_URLS = {
     "authentication"                      : "vld_validacao.validacao",
-    "student page"                        : BASE_URL    + "fest_geral.cursos_list",
+    "student page"                        : "fest_geral.cursos_list",
     "academic pathway"                    : BASE_URL    + "fest_geral.curso_percurso_academico_view",
     "position in the plan"                : BASE_URL    + "fest_geral.curso_posicao_plano_view",
-    "courses units"                       : BASE_URL    + "fest_geral.ucurr_inscricoes_list",
+    "courses units"                       : "fest_geral.ucurr_inscricoes_list",
     "status and more"                     : BASE_URL    + "fest_geral.estatutos_regimes_view",
     "ingress data"                        : BASE_URL    + "fest_geral.info_ingresso_view",
-    "classes data"                        : BASE_URL    + "it_geral.resultado_aluno",
+    "classes data"                        : "it_geral.resultado_aluno",
     "personal timetable"                  : BASE_URL_PT + "hor_geral.estudantes_view", # This page is only available in portuguese
     "picture"                             : BASE_URL    + "fotografias_service.foto",
     "curricular unit"                     : BASE_URL    + "ucurr_geral.ficha_uc_view",

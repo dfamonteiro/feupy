@@ -42,7 +42,7 @@ class User:
         self.pv_fest_id = pv_fest_id
         self.credentials = credentials # Note, this is only a reference
 
-        html = credentials.get_html(_utils.SIG_URLS["courses units"], {"pv_fest_id" : str(pv_fest_id)})
+        html = credentials.get_html(self.credentials.base_url + _utils.SIG_URLS["courses units"], {"pv_fest_id" : str(pv_fest_id)})
         soup = _bs4.BeautifulSoup(html, "lxml")
         
         if "Não tem permissões para aceder a este conteúdo." in html:
@@ -91,7 +91,7 @@ class User:
              (CurricularUnit(419989), None),
              (CurricularUnit(419990), None)]
         """
-        html = self.credentials.get_html(_utils.SIG_URLS["courses units"], {"pv_fest_id" : str(self.pv_fest_id)})
+        html = self.credentials.get_html(self.credentials.base_url + _utils.SIG_URLS["courses units"], {"pv_fest_id" : str(self.pv_fest_id)})
         soup = _bs4.BeautifulSoup(html, "lxml")
 
         result = []
@@ -144,8 +144,8 @@ class User:
         Returns:
             A list of tuples
         """
-        raise NotImplementedError("No idea if this works or not")
-        html = self.credentials.get_html(_utils.SIG_URLS["classes data"] , params = {"pv_estudante_id" : str(self.pv_fest_id)})
+        raise Warning("No idea if this works or not")
+        html = self.credentials.get_html(self.credentials.base_url + _utils.SIG_URLS["classes data"] , params = {"pv_estudante_id" : str(self.pv_fest_id)})
         soup = _bs4.BeautifulSoup(html, 'lxml')
     
         tables = soup.find_all("table", {"class" : "tabela"})[1:] # Forget first table
@@ -194,7 +194,7 @@ class User:
             A tuple of ints
         """
         payload = {"pv_num_unico" : str(credentials.username)}
-        html = credentials.get_html(_utils.SIG_URLS["student page"], payload)
+        html = credentials.get_html(credentials.base_url + _utils.SIG_URLS["student page"], payload)
     
         matches = _re.findall(r"pv_fest_id=(\d+)", html)
 
