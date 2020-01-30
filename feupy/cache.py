@@ -92,13 +92,17 @@ def _trim_student(html):
     return str(useful_stuff)
 
 def _curricular_unit_treatment(html):
-    uc_academic_year = _utils.parse_academic_year(html)
+    timeout = _time.time() + _random_radioactive_lifetime(_datetime.timedelta(days = 6*30)) # It is extremely unlikely that a uc page from a previous year will ever change
+    
+    try:
+        #If this fails, it's probably a uc from another faculty
+        uc_academic_year = _utils.parse_academic_year(html)
+    except IndexError:
+        return (timeout, html)
 
     if uc_academic_year < _utils.get_current_academic_year():
-        timeout = _time.time() + _random_radioactive_lifetime(_datetime.timedelta(days = 6*30)) # It is extremely unlikely that a uc page from a previous year will ever change
         return (timeout, _trim_curricular_unit(html))
     else:
-        timeout = _time.time() + _random_radioactive_lifetime(_datetime.timedelta(days = 30))
         return (timeout, _trim_curricular_unit(html))
 
 def _teacher_treatment(html):
