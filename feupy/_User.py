@@ -114,7 +114,7 @@ class User:
         Returns:
             A list of dicts
         """
-        html = self.credentials.get_html(_utils.SIG_URLS["personal timetable"], {"pv_fest_id" : str(self.pv_fest_id)})
+        html = self.credentials.get_html(self.credentials.base_url.replace("/en/", "/pt/") + _utils.SIG_URLS["personal timetable"], {"pv_fest_id" : str(self.pv_fest_id)})
         soup = _bs4.BeautifulSoup(html, "lxml")
 
         return _timetable.parse_current_timetable(self.credentials, soup.a["href"])
@@ -129,7 +129,7 @@ class User:
             list of dictionaries (see :obj:`timetable.parse_timetable` for an example
             of such a list).
         """
-        html = self.credentials.get_html(_utils.SIG_URLS["personal timetable"], {"pv_fest_id" : str(self.pv_fest_id)})
+        html = self.credentials.get_html(self.credentials.base_url.replace("/en/", "/pt/") + _utils.SIG_URLS["personal timetable"], {"pv_fest_id" : str(self.pv_fest_id)})
         soup = _bs4.BeautifulSoup(html, "lxml")
 
         return _timetable.parse_timetables(self.credentials, soup.a["href"])

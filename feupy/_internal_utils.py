@@ -20,7 +20,7 @@ SIG_URLS = {
     "status and more"                     : BASE_URL    + "fest_geral.estatutos_regimes_view",
     "ingress data"                        : BASE_URL    + "fest_geral.info_ingresso_view",
     "classes data"                        : "it_geral.resultado_aluno",
-    "personal timetable"                  : BASE_URL_PT + "hor_geral.estudantes_view", # This page is only available in portuguese
+    "personal timetable"                  : "hor_geral.estudantes_view", # This page is only available in portuguese
     "picture"                             : BASE_URL    + "fotografias_service.foto",
     "curricular unit"                     : BASE_URL    + "ucurr_geral.ficha_uc_view",
     "curricular unit students"            : BASE_URL    + "fest_geral.estudantes_inscritos_list",
