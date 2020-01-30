@@ -5,7 +5,6 @@ import re as _re
 import bs4 as _bs4
 
 from . import _Credentials
-from . import _internal_utils as _utils
 from . import _CurricularUnit
 from . import _Teacher
 
@@ -260,7 +259,7 @@ def _parse_side_bar(credentials: _Credentials.Credentials, url: str) -> dict:
 
     result = {}
     for tag in timetable_tags:
-        result[_parse_dates(tag.string, academic_year)] = _utils.BASE_URL_PT + tag["href"]
+        result[_parse_dates(tag.string, academic_year)] = credentials.base_url.replace("/en/", "/pt/") + tag["href"]
     return result
 
 def parse_timetable(credentials: _Credentials.Credentials, url: str) -> list:
@@ -429,14 +428,14 @@ def parse_timetable(credentials: _Credentials.Credentials, url: str) -> list:
                 "td", {"headers": "t3"}).string.split(":"))
             start = _datetime.time(hour=hour, minute=minute)
 
-            url = (_utils.BASE_URL_PT + row.find("td",
+            url = (credentials.base_url.replace("/en/", "/pt/") + row.find("td",
                                           {"headers": "t6"}).a["href"]).lower()
 
             if "hor_geral.composto_desc" in url:
                 temp_html = credentials.get_html(url)
                 temp_soup = _bs4.BeautifulSoup(temp_html, 'lxml')
                 temp_content = temp_soup.find("div", {"id": "conteudoinner"})
-                url = (_utils.BASE_URL_PT + temp_content.find_all("a")
+                url = (credentials.base_url.replace("/en/", "/pt/") + temp_content.find_all("a")
                        [1]["href"]).lower()
             else:
                 url+=weeks_url_query # For some odd reason, single classes' urls don't include the start and finish weeks, a bug on sigarra's side perhaps?
@@ -459,7 +458,7 @@ def _timedelta_to_time(t: _datetime.timedelta) -> _datetime.time:
 
 
 def _parse_teachers(credentials: _Credentials.Credentials, a: _bs4.Tag) -> tuple:
-    url = (_utils.BASE_URL_PT + a["href"]).lower()
+    url = (credentials.base_url.replace("/en/", "/pt/") + a["href"]).lower()
 
     if "hor_geral.composto_doc" in url:
         html = credentials.get_html(url)
@@ -476,7 +475,7 @@ def _parse_teachers(credentials: _Credentials.Credentials, a: _bs4.Tag) -> tuple
 
 
 def _parse_classes(credentials: _Credentials.Credentials, a: _bs4.Tag) -> tuple:
-    url = (_utils.BASE_URL_PT + a["href"]).lower()
+    url = (credentials.base_url.replace("/en/", "/pt/") + a["href"]).lower()
 
     if "hor_geral.composto_desc" in url:
         html = credentials.get_html(url)
@@ -493,7 +492,7 @@ def _parse_classes(credentials: _Credentials.Credentials, a: _bs4.Tag) -> tuple:
 
 
 def _parse_rooms(credentials: _Credentials.Credentials, a: _bs4.Tag) -> tuple:
-    url = (_utils.BASE_URL_PT + a["href"]).lower()
+    url = (credentials.base_url.replace("/en/", "/pt/") + a["href"]).lower()
 
     if "hor_geral.composto_salas" in url:
         html = credentials.get_html(url)
