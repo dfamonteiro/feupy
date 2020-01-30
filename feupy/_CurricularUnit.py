@@ -28,7 +28,7 @@ class CurricularUnit:
         code               (str)
         acronym            (str): The acronym of the curricular unit
         academic_year      (int): The academic year in which this curricular unit was taught
-        semester           (int): The semester in which this curricular unit was taught
+        semester           (str): The semester in which this curricular unit was taught (either '1', '2', or 'A')
         has_moodle         (bool): Whether or not this curricular unit has a moodle page
         is_active          (bool): Whether or not this curricular unit is active
         webpage_url        (str or None): The webpage of this curricular unit, if it exists. Otherwise it's set to None
@@ -76,7 +76,7 @@ class CurricularUnit:
         'number_of_students': 220,
         'pv_ocorrencia_id': 419989,
         'regents': (Teacher(210963),),
-        'semester': 2,
+        'semester': '2',
         'teachers': (Teacher(210963),
                     Teacher(547486),
                     Teacher(211636),
@@ -133,8 +133,16 @@ class CurricularUnit:
 
         self.academic_year = _utils.parse_academic_year(contents)
 
-        match = _re.findall(r"Instance: \d\d\d\d/\d\d\d\d - (\d)S", str(contents))[0]
-        self.semester = int(match)
+        matches = _re.findall(r"Instance: \d\d\d\d/\d\d\d\d - (\d)S", str(contents))
+        if len(matches) == 1:
+            self.semester = matches[0]
+        else:
+            matches = _re.findall(r"Instance: \d\d\d\d/\d\d\d\d - A", str(contents))
+            
+            if len(matches) == 1:
+                self.semester = 'A'
+            else:
+                self.semester = None                
 
         self.has_moodle = "UC tem página no Moodle" in str(contents)
 

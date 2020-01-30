@@ -144,7 +144,7 @@ ResearcherID  ORCID  Google Scholar Citations  DBLP Author  Scopus Author
  'number_of_students': 182,
  'pv_ocorrencia_id': 419983,
  'regents': (Teacher(230756),),
- 'semester': 1,
+ 'semester': '1',
  'teachers': (Teacher(230756),
               Teacher(230756),
               Teacher(520205),
