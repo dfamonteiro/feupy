@@ -121,7 +121,7 @@ class CurricularUnit:
             html = _cache.get_html(url = self.url, use_cache = use_cache) # Getting the html
             soup = _bs4.BeautifulSoup(html, "lxml")
         
-        if "The School responsible for the occurrence was not found." in html:
+        if "The School responsible for the occurrence was not found." in html or "Não foi encontrada a ocorrência especificada." in html:
             raise ValueError(f"Curricular unit with pv_ocorrencia_id {pv_ocorrencia_id} doesn't exist")
        
         contents = soup.find("div", {"id" : "conteudoinner"})

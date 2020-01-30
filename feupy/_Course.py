@@ -208,7 +208,17 @@ class Course:
                     teachers_urls.append(_utils.BASE_URL + tag["href"])
         _cache.get_html_async(teachers_urls, use_cache = use_cache)
 
-        return list(set(_CurricularUnit.CurricularUnit.from_url(url) for url in curricular_units_urls))
+        res = set()
+        for url in curricular_units_urls:
+            try:
+                res.add(_CurricularUnit.CurricularUnit.from_url(url))
+
+            except ValueError as e:
+                # It is possible that Sigarra can have dead links in the study plan
+                if "Curricular unit with pv_ocorrencia_id" not in str(e):
+                    raise e
+
+        return list(res)
 
     
     def syllabus(self, use_cache : bool = True) -> list:
