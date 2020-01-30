@@ -1,5 +1,4 @@
 # The sigarra scraping library no one asked for
-# This project has been moved! Please check its new [home](https://github.com/dfamonteiro/feupy)
 [![image](https://img.shields.io/pypi/v/feupy)](https://pypi.org/project/feupy/)
 [![image](https://img.shields.io/pypi/status/feupy)](https://pypi.org/project/feupy/)
 [![Documentation Status](https://readthedocs.org/projects/feupy/badge/?version=master)](https://feupy.readthedocs.io/en/master/?badge=master)
