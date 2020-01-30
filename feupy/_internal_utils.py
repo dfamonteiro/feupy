@@ -12,7 +12,7 @@ from PIL import Image
 BASE_URL    = "https://sigarra.up.pt/feup/en/"
 BASE_URL_PT = "https://sigarra.up.pt/feup/pt/" # Some pages don't have an english translation, such as "personal timetable"
 SIG_URLS = {
-    "authentication"                      : BASE_URL    + "vld_validacao.validacao",
+    "authentication"                      : "vld_validacao.validacao",
     "student page"                        : BASE_URL    + "fest_geral.cursos_list",
     "academic pathway"                    : BASE_URL    + "fest_geral.curso_percurso_academico_view",
     "position in the plan"                : BASE_URL    + "fest_geral.curso_posicao_plano_view",

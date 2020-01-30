@@ -25,6 +25,7 @@ class Credentials:
         username (int or str): Your username (e.g. 201806185)
         session  (:obj:`requests.Session`): A :obj:`requests.Session` object that holds the login cookies
         cache    (dict): A dictionary that maps a url string to an html string
+        base_url (str): The url of your faculty (in english) (defaults to "https://sigarra.up.pt/feup/en/")
 
     Example::
 
@@ -42,10 +43,9 @@ class Credentials:
         # Password for 201806185?
         # :>
     """
-    __slots__ = ["username", "session", "cache"]
+    __slots__ = ["username", "session", "cache", "base_url"]
 
-    def __init__(self, username = None, password : str = None):
-
+    def __init__(self, username = None, password : str = None, base_url : str = "https://sigarra.up.pt/feup/en/"):
         #This is a modified version of the https://github.com/msramalho/sigpy login function
 
         AUTH_FAIL = "O conjunto utilizador/senha não é válido." # If this string appears on the HTML answer, the login creds aren't valid:(
@@ -57,13 +57,14 @@ class Credentials:
         
         session = _requests.Session()
         credencials = {'p_user': username, 'p_pass': password}
-        request = session.post(_utils.SIG_URLS["authentication"], params = credencials) # Sending the creds to sigarra
+        request = session.post(base_url + _utils.SIG_URLS["authentication"], params = credencials) # Sending the creds to sigarra
         if AUTH_FAIL in request.text:
             raise ValueError("The login credencials aren't valid")
         
         self.username = username
         self.session  = session
         self.cache    = {}
+        self.base_url = base_url
     
     def get_html(self, url : str, params : dict = {}) -> str:
         """Functionally equivalent to ``requests.get(url, params).text``,
