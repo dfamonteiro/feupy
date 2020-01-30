@@ -109,6 +109,18 @@ class CurricularUnit:
         html = _cache.get_html(url = self.url, use_cache = use_cache) # Getting the html
         soup = _bs4.BeautifulSoup(html, "lxml")
 
+        if soup.find("meta", {"http-equiv" : "Refresh"}) != None:
+            self.url = soup.find("a")["href"]
+
+            if "/pt/" in self.url:
+                self.url = self.url.replace("/pt/", "/en/") # I want the page in english
+            else:
+                index = self.url.index("ucurr_geral.ficha_uc_view")
+                self.url = self.url[:index] + "en/" + self.url[index:]
+
+            html = _cache.get_html(url = self.url, use_cache = use_cache) # Getting the html
+            soup = _bs4.BeautifulSoup(html, "lxml")
+        
         if "The School responsible for the occurrence was not found." in html:
             raise ValueError(f"Curricular unit with pv_ocorrencia_id {pv_ocorrencia_id} doesn't exist")
        

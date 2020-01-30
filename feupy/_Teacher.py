@@ -69,8 +69,18 @@ class Teacher:
         soup = _bs4.BeautifulSoup(html, "lxml")
 
         if "O funcionário indicado não foi encontrado." in html:
-            raise ValueError(f"Teacher with p_codigo {p_codigo} doesn't exist")
-        
+            # The teacher's page is not here
+            # Maybe it could be in another faculty?
+            try:
+                html = _cache.get_html(url = _utils.SIG_URLS["redirection page"] + "?" + _urllib.parse.urlencode({"pct_codigo" : str(p_codigo)}), use_cache = use_cache)
+                soup = _bs4.BeautifulSoup(html, "lxml")
+                self.url = soup.find("a")["href"]
+
+                html = _cache.get_html(url = self.url, use_cache = use_cache) # Getting the html
+                soup = _bs4.BeautifulSoup(html, "lxml")
+            except:
+                raise ValueError(f"Teacher with p_codigo {p_codigo} doesn't exist")
+
         personal_info = soup.find("div", {"class" : "informacao-pessoal-dados-dados"})
 
         for row in personal_info.find_all("tr"):

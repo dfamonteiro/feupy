@@ -35,7 +35,8 @@ SIG_URLS = {
     "teacher"                             : BASE_URL    + "func_geral.formview",
     "course"                              : BASE_URL    + "cur_geral.cur_view",
     "course classes"                      : BASE_URL_PT + "hor_geral.lista_turmas_curso",
-    "course exams"                        : BASE_URL_PT + "exa_geral.mapa_de_exames"
+    "course exams"                        : BASE_URL_PT + "exa_geral.mapa_de_exames",
+    "redirection page"                    : BASE_URL    + "vld_entidades_geral.entidade_pagina"
 }
 
 
