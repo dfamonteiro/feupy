@@ -47,12 +47,13 @@ class Student:
         # ({'course': Course(742, 2019), 'institution': 'Faculty of Engineering', 'first academic year': 2018},)
     """
 
-    __slots__ = ["name", "links", "personal_webpage", "username", "courses", "url"]
+    __slots__ = ["name", "links", "personal_webpage", "username", "courses", "url", "base_url"]
 
-    def __init__(self, username : int, use_cache : bool = True):
+    def __init__(self, username : int, use_cache : bool = True, base_url : str = "https://sigarra.up.pt/feup/en/"):
 
         self.username = username
-        self.url = _utils.SIG_URLS["student page"] + "?" + _urllib.parse.urlencode({"pv_num_unico" : str(username)})
+        self.base_url = base_url
+        self.url = self.base_url + _utils.SIG_URLS["student page"] + "?" + _urllib.parse.urlencode({"pv_num_unico" : str(username)})
         
         html = _cache.get_html(url = self.url, use_cache = use_cache) # Getting the html
         soup = _bs4.BeautifulSoup(html, "lxml")
@@ -97,7 +98,7 @@ class Student:
             if name_div.a == None: # There is no link
                 course = name_div.string
             else:
-                course = _Course.Course.from_a_tag(name_div.a, use_cache) # If there is a link, get the Course object
+                course = _Course.Course.from_a_tag(name_div.a, use_cache, base_url = base_url) # If there is a link, get the Course object
             
             institution = course_div.find("div", {"class" : "estudante-lista-curso-instit"}).string
 
@@ -107,7 +108,7 @@ class Student:
         self.courses = tuple(self.courses)
 
     @classmethod
-    def from_url(cls, url : str, use_cache : bool = True):
+    def from_url(cls, url : str, use_cache : bool = True, base_url : str = "https://sigarra.up.pt/feup/en/"):
         """Scrapes the student webpage from the given url and returns a :obj:`Student` object.
 
         Args:
@@ -135,10 +136,14 @@ class Student:
         
         username = int(matches[0])
 
-        return Student(username, use_cache)
+        matches = _re.findall(r"^https?://sigarra\.up\.pt/(\w+)/", url)
+        if len(matches) == 1:
+            base_url = f"https://sigarra.up.pt/{matches[0]}/en/"
+
+        return Student(username, use_cache, base_url = base_url)
     
     @classmethod
-    def from_a_tag(cls, bs4_tag : _bs4.Tag, use_cache : bool = True):
+    def from_a_tag(cls, bs4_tag : _bs4.Tag, use_cache : bool = True, base_url : str = "https://sigarra.up.pt/feup/en/"):
         """Scrapes the student webpage from the given :obj:`bs4.tag` object and returns a :obj:`Student` object.
         
         Args:
@@ -155,7 +160,7 @@ class Student:
         if bs4_tag.name != "a":
             raise ValueError(f"from_a_tag() 'bs4_tag' argument must be an anchor tag, not '{bs4_tag.name}'")
         
-        return Student.from_url(bs4_tag["href"], use_cache)
+        return Student.from_url(bs4_tag["href"], use_cache, base_url = base_url)
     
     def full_info(self, credentials : _Credentials.Credentials) -> dict:
         """Returns a dictionary with the information that one can get when it is logged in.

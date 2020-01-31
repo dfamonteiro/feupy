@@ -341,7 +341,7 @@ class Course:
 
 
     @classmethod
-    def from_a_tag(cls, bs4_tag : _bs4.Tag, use_cache : bool = True):
+    def from_a_tag(cls, bs4_tag : _bs4.Tag, use_cache : bool = True, base_url : str = "https://sigarra.up.pt/feup/en/"):
         """Scrapes the course webpage from the given :obj:`bs4.tag` object and returns a :obj:`Course` object.
         
         Args:
