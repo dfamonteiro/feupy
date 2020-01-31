@@ -101,7 +101,7 @@ class CurricularUnit:
     __slots__ = ["pv_ocorrencia_id", "url", "name", "code", "acronym", "academic_year", "semester", "has_moodle", "is_active", "webpage_url", 
                  "number_of_students", "curricular_year", "ECTS_credits", "regents", "teachers", "text"]
     
-    def __init__(self, pv_ocorrencia_id : int, use_cache : bool = True):
+    def __init__(self, pv_ocorrencia_id : int, use_cache : bool = True, base_url : str = "https://sigarra.up.pt/feup/en/"):
 
         self.pv_ocorrencia_id = pv_ocorrencia_id
         self.url = _utils.SIG_URLS["curricular unit"] + "?" + _urllib.parse.urlencode({"pv_ocorrencia_id" : str(pv_ocorrencia_id)})
@@ -806,7 +806,7 @@ class CurricularUnit:
         return result
 
     @classmethod
-    def from_url(cls, url : str, use_cache : bool = True):
+    def from_url(cls, url : str, use_cache : bool = True, base_url : str = "https://sigarra.up.pt/feup/en/"):
         """Scrapes the curricular webpage from the given url and returns a :obj:`CurricularUnit` object.
 
         Args:
@@ -837,7 +837,7 @@ class CurricularUnit:
         return CurricularUnit(pv_ocorrencia_id, use_cache)
     
     @classmethod
-    def from_a_tag(cls, bs4_tag : _bs4.Tag, use_cache : bool = True):
+    def from_a_tag(cls, bs4_tag : _bs4.Tag, use_cache : bool = True, base_url : str = "https://sigarra.up.pt/feup/en/"):
         """Scrapes the curricular unit webpage from the given :obj:`bs4.tag` object and returns a :obj:`CurricularUnit` object.
         
         Args:

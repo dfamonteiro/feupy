@@ -50,7 +50,7 @@ class Course:
     """
     __slots__ = ["pv_curso_id","pv_ano_lectivo", "url", "name", "official_code", "directors", "acronym", "text"]
 
-    def __init__(self, pv_curso_id : int, pv_ano_lectivo : int = None, use_cache : bool = True):
+    def __init__(self, pv_curso_id : int, pv_ano_lectivo : int = None, use_cache : bool = True, base_url : str = "https://sigarra.up.pt/feup/en/"):
         
         if pv_ano_lectivo == None:
             pv_ano_lectivo = _utils.get_current_academic_year()
@@ -310,7 +310,7 @@ class Course:
 
 
     @classmethod
-    def from_url(cls, url : str, use_cache : bool = True):
+    def from_url(cls, url : str, use_cache : bool = True, base_url : str = "https://sigarra.up.pt/feup/en/"):
         """Scrapes the course webpage from the given url and returns a :obj:`Course` object.
 
         Args:
