@@ -38,6 +38,7 @@ class Teacher:
         profession       (str)
         department       (str)
         presentation     (str): The presentation of this teacher
+        base_url         (str): The url of your faculty (in english) (defaults to "https://sigarra.up.pt/feup/en/")
 
     Example::
 
@@ -55,15 +56,16 @@ class Teacher:
         # http://www.fe.up.pt/~jlopes/
     """
     __slots__ = ["p_codigo", "name", "acronym", "status", "links", "personal_webpage", "url", "voip",
-                 "email", "rooms", "category", "career", "profession", "department", "presentation"]
+                 "email", "rooms", "category", "career", "profession", "department", "presentation", "base_url"]
 
-    def __init__(self, p_codigo : int, use_cache : bool = True):
+    def __init__(self, p_codigo : int, use_cache : bool = True, base_url : str = "https://sigarra.up.pt/feup/en/"):
 
         for attribute in self.__slots__:
             setattr(self, attribute, None)
 
         self.p_codigo = p_codigo
-        self.url = _utils.SIG_URLS["teacher"] + "?" + _urllib.parse.urlencode({"p_codigo" : str(p_codigo)})
+        self.base_url = base_url
+        self.url = self.base_url + _utils.SIG_URLS["teacher"] + "?" + _urllib.parse.urlencode({"p_codigo" : str(p_codigo)})
         
         html = _cache.get_html(url = self.url, use_cache = use_cache) # Getting the html
         soup = _bs4.BeautifulSoup(html, "lxml")
@@ -72,9 +74,18 @@ class Teacher:
             # The teacher's page is not here
             # Maybe it could be in another faculty?
             try:
-                html = _cache.get_html(url = _utils.SIG_URLS["redirection page"] + "?" + _urllib.parse.urlencode({"pct_codigo" : str(p_codigo)}), use_cache = use_cache)
+                html = _cache.get_html(url = self.base_url + _utils.SIG_URLS["redirection page"] + "?" + _urllib.parse.urlencode({"pct_codigo" : str(p_codigo)}), use_cache = use_cache)
                 soup = _bs4.BeautifulSoup(html, "lxml")
                 self.url = soup.find("a")["href"]
+                #########################
+                if "/pt/" in self.url:
+                    self.url = self.url.replace("/pt/", "/en/") # I want the page in english
+                else:
+                    index = self.url.index(_utils.SIG_URLS["teacher"])
+                    self.url = self.url[:index] + "en/" + self.url[index:]
+                #########################
+                index = self.url.index(_utils.SIG_URLS["teacher"])
+                self.base_url = self.url[:index]
 
                 html = _cache.get_html(url = self.url, use_cache = use_cache) # Getting the html
                 soup = _bs4.BeautifulSoup(html, "lxml")
@@ -90,19 +101,19 @@ class Teacher:
                 if row.find("a") != None:
                     self.personal_webpage = row.a["href"]
             
-            elif "Acronym:" in str(row):
+            elif "Acronym:" in str(row) or "Sigla:" in str(row):
                 self.acronym = row.find_all("td")[1].string
             
-            elif "Status:" in str(row):
+            elif "Status:" in str(row) or "Estado:" in str(row):
                 self.status = row.find_all("td")[1].string
 
-            elif "Institutional E-mail:" in str(row):
+            elif "Institutional E-mail:" in str(row) or "Email" in str(row):
                 self.email = row.a.contents[0] + "@" + row.a.contents[-1]
                 
             elif "Voip:" in str(row):
                 self.voip = int(row.find_all("td")[1].string)
 
-            elif "Rooms:" in str(row):
+            elif "Rooms:" in str(row) or "Salas:" in str(row):
                 self.rooms = row.find_all("td")[1].a.string
 
         self.links = tuple(tag["href"] for tag in soup.find("table", {"class" : "tabelasz"}).find_all("a"))
@@ -114,10 +125,10 @@ class Teacher:
             if "Department:" in str(td):
 
                 for row in td.find_all("tr"):
-                    if "Category:" in str(row):
+                    if "Category:" in str(row) or "Categoria:" in str(row):
                         self.category = row.find_all("td")[1].string
                     
-                    elif "Career:" in str(row):
+                    elif "Career:" in str(row) or "Carreira:" in str(row):
                         self.career = row.find_all("td")[1].string
 
                     elif "Professional Group:" in str(row):
@@ -140,10 +151,10 @@ class Teacher:
         Returns:
             A :obj:`PIL.Image.Image` object
         """
-        return _utils.get_image(_utils.SIG_URLS["picture"], {"pct_cod" : str(self.p_codigo)})
+        return _utils.get_image(self.base_url + _utils.SIG_URLS["picture"], {"pct_cod" : str(self.p_codigo)})
 
     @classmethod
-    def from_url(cls, url : str, use_cache : bool = True):
+    def from_url(cls, url : str, use_cache : bool = True, base_url : str = "https://sigarra.up.pt/feup/en/"):
         """Scrapes the teacher webpage from the given url and returns a :obj:`Teacher` object.
 
         Args:
@@ -170,10 +181,14 @@ class Teacher:
         
         p_codigo = int(matches[0])
 
-        return Teacher(p_codigo, use_cache)
+        matches = _re.findall(r"^https?://sigarra\.up\.pt/(\w+)/", url)
+        if len(matches) == 1:
+            base_url = f"https://sigarra.up.pt/{matches[0]}/en/"
+
+        return Teacher(p_codigo, use_cache, base_url = base_url)
     
     @classmethod
-    def from_a_tag(cls, bs4_tag : _bs4.Tag, use_cache : bool = True):
+    def from_a_tag(cls, bs4_tag : _bs4.Tag, use_cache : bool = True, base_url : str = "https://sigarra.up.pt/feup/en/"):
         """Scrapes the teacher webpage from the given :obj:`bs4.tag` object and returns a :obj:`Teacher` object.
         
         Args:
@@ -187,7 +202,7 @@ class Teacher:
         if bs4_tag.name != "a":
             raise ValueError(f"from_a_tag() 'bs4_tag' argument must be an anchor tag, not '{bs4_tag.name}'")
         
-        return Teacher.from_url(bs4_tag["href"], use_cache)
+        return Teacher.from_url(bs4_tag["href"], use_cache, base_url = base_url)
     
     
     # Comparisons between teachers are made with the p_codigo

@@ -21,7 +21,7 @@ SIG_URLS = {
     "ingress data"                        : BASE_URL    + "fest_geral.info_ingresso_view",
     "classes data"                        : "it_geral.resultado_aluno",
     "personal timetable"                  : "hor_geral.estudantes_view", # This page is only available in portuguese
-    "picture"                             : BASE_URL    + "fotografias_service.foto",
+    "picture"                             : "fotografias_service.foto",
     "curricular unit"                     : BASE_URL    + "ucurr_geral.ficha_uc_view",
     "curricular unit students"            : BASE_URL    + "fest_geral.estudantes_inscritos_list",
     "curricular unit other occurrences"   : BASE_URL    + "ucurr_geral.ficha_uc_list",
@@ -32,11 +32,11 @@ SIG_URLS = {
     "curricular unit results"             : BASE_URL    + "lres_geral.show_pautas_resul",
     "curricular unit timetable"           : BASE_URL_PT + "hor_geral.ucurr_view",
     "curricular unit exams"               : BASE_URL_PT + "exa_geral.mapa_de_exames",
-    "teacher"                             : BASE_URL    + "func_geral.formview",
+    "teacher"                             : "func_geral.formview",
     "course"                              : BASE_URL    + "cur_geral.cur_view",
     "course classes"                      : BASE_URL_PT + "hor_geral.lista_turmas_curso",
     "course exams"                        : BASE_URL_PT + "exa_geral.mapa_de_exames",
-    "redirection page"                    : BASE_URL    + "vld_entidades_geral.entidade_pagina"
+    "redirection page"                    : "vld_entidades_geral.entidade_pagina"
 }
 
 
