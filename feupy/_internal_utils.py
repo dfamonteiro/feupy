@@ -33,9 +33,9 @@ SIG_URLS = {
     "curricular unit timetable"           : BASE_URL_PT + "hor_geral.ucurr_view",
     "curricular unit exams"               : BASE_URL_PT + "exa_geral.mapa_de_exames",
     "teacher"                             : "func_geral.formview",
-    "course"                              : BASE_URL    + "cur_geral.cur_view",
-    "course classes"                      : BASE_URL_PT + "hor_geral.lista_turmas_curso",
-    "course exams"                        : BASE_URL_PT + "exa_geral.mapa_de_exames",
+    "course"                              : "cur_geral.cur_view",
+    "course classes"                      : "hor_geral.lista_turmas_curso",
+    "course exams"                        : "exa_geral.mapa_de_exames",
     "redirection page"                    : "vld_entidades_geral.entidade_pagina"
 }
 

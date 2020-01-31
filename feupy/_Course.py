@@ -48,7 +48,7 @@ class Course:
         # João Carlos Pascoal Faria
         # Maria Cristina de Carvalho Alves Ribeiro
     """
-    __slots__ = ["pv_curso_id","pv_ano_lectivo", "url", "name", "official_code", "directors", "acronym", "text"]
+    __slots__ = ["pv_curso_id","pv_ano_lectivo", "url", "name", "official_code", "directors", "acronym", "text", "base_url"]
 
     def __init__(self, pv_curso_id : int, pv_ano_lectivo : int = None, use_cache : bool = True, base_url : str = "https://sigarra.up.pt/feup/en/"):
         
@@ -56,13 +56,14 @@ class Course:
             pv_ano_lectivo = _utils.get_current_academic_year()
 
         self.pv_curso_id    = pv_curso_id
+        self.base_url = base_url
         self.pv_ano_lectivo = pv_ano_lectivo
 
         payload = {
             "pv_curso_id"    : str(pv_curso_id),
             "pv_ano_lectivo" : str(pv_ano_lectivo)
         }
-        self.url = _utils.SIG_URLS["course"] + "?" + _urllib.parse.urlencode(payload)
+        self.url = self.base_url + _utils.SIG_URLS["course"] + "?" + _urllib.parse.urlencode(payload)
         
         html = _cache.get_html(url = self.url, use_cache = use_cache) # Getting the html
         soup = _bs4.BeautifulSoup(html, "lxml")
@@ -77,7 +78,7 @@ class Course:
         info_box = contents.find("div", {"class" : "caixa-informativa"})
 
         directors_ids = _re.findall(r"vld_entidades_geral.entidade_pagina\?pct_codigo=(\d+)", html)
-        self.directors  = tuple(_Teacher.Teacher(int(_id)) for _id in directors_ids)
+        self.directors  = tuple(_Teacher.Teacher(int(_id), base_url = self.base_url) for _id in directors_ids)
 
         for row in info_box.find_all("tr"):
             if "Acronym:" in str(row):
@@ -131,7 +132,7 @@ class Course:
             "pv_periodos"    : "1" # All the classes in that year
         }
 
-        html = credentials.get_html(_utils.SIG_URLS["course classes"], payload)
+        html = self.base_url.replace("/en/", "/pt/") + credentials.get_html(_utils.SIG_URLS["course classes"], payload)
         soup = _bs4.BeautifulSoup(html, "lxml")
 
         if "Não existem dados para este ano letivo." in html:
@@ -139,7 +140,7 @@ class Course:
 
         classes_tags = soup.find_all("a", {"class" : "t"})
 
-        return {tag.string : _utils.BASE_URL_PT + tag["href"] for tag in classes_tags}
+        return {tag.string : self.base_url.replace("/en/", "/pt/") + tag["href"] for tag in classes_tags}
 
 
     def curricular_units(self, use_cache : bool = True) -> list:
@@ -187,7 +188,7 @@ class Course:
 
         for tag in soup.find_all("a"):
             if "cur_geral.cur_planos_estudos_view" in str(tag):
-                url = _utils.BASE_URL + tag["href"]
+                url = self.base_url + tag["href"]
                 break
         else:
             raise ValueError("No study plan link was found on the course page")
@@ -196,7 +197,7 @@ class Course:
         soup = _bs4.BeautifulSoup(html, "lxml")
 
         curricular_units_tags = (tag for tag in soup.find_all("a") if "ucurr_geral.ficha_uc_view" in str(tag))
-        curricular_units_urls = [_utils.BASE_URL + tag["href"] for tag in curricular_units_tags]
+        curricular_units_urls = [self.base_url + tag["href"] for tag in curricular_units_tags]
 
         # The following block of code assynchronously loads both the curricular units' and the teachers' webpages
         teachers_urls = []
@@ -205,13 +206,13 @@ class Course:
 
             for tag in uc_soup.find_all("a"):
                 if "func_geral.formview" in str(tag):
-                    teachers_urls.append(_utils.BASE_URL + tag["href"])
+                    teachers_urls.append(self.base_url + tag["href"])
         _cache.get_html_async(teachers_urls, use_cache = use_cache)
 
         res = set()
         for url in curricular_units_urls:
             try:
-                res.add(_CurricularUnit.CurricularUnit.from_url(url))
+                res.add(_CurricularUnit.CurricularUnit.from_url(url, base_url = self.base_url))
 
             except ValueError as e:
                 # It is possible that Sigarra can have dead links in the study plan
@@ -270,7 +271,7 @@ class Course:
 
         for tag in soup.find_all("a"):
             if "cur_geral.cur_planos_estudos_view" in str(tag):
-                url = _utils.BASE_URL + tag["href"]
+                url = self.base_url + tag["href"]
                 break
         else:
             raise ValueError("No study plan link was found on the course page")
@@ -304,7 +305,7 @@ class Course:
         Returns:
             A list of dictionaries (see :func:`exams.exams` for more information about the dictionaries)
         """
-        url = _utils.SIG_URLS["curricular unit exams"] + "?" + _urllib.parse.urlencode({"p_curso_id" : str(self.pv_curso_id)})
+        url = self.base_url.replace("/en/", "/pt/") + _utils.SIG_URLS["course exams"] + "?" + _urllib.parse.urlencode({"p_curso_id" : str(self.pv_curso_id)})
 
         return _exams.exams(url, use_cache)
 
@@ -337,7 +338,11 @@ class Course:
         except:
             raise ValueError(f"from_url() 'url' argument \"{url}\" is not a valid course url")
 
-        return Course(pv_curso_id, pv_ano_lectivo, use_cache)
+        matches = _re.findall(r"^https?://sigarra\.up\.pt/(\w+)/", url)
+        if len(matches) == 1:
+            base_url = f"https://sigarra.up.pt/{matches[0]}/en/"
+
+        return Course(pv_curso_id, pv_ano_lectivo, use_cache, base_url = base_url)
 
 
     @classmethod
@@ -355,7 +360,7 @@ class Course:
         if bs4_tag.name != "a":
             raise ValueError(f"from_a_tag() 'bs4_tag' argument must be an anchor tag, not '{bs4_tag.name}'")
         
-        return Course.from_url(bs4_tag["href"], use_cache)
+        return Course.from_url(bs4_tag["href"], use_cache, base_url = base_url)
 
     
     # Comparisons between curricular units are made with the pv_curso_id and pv_ano_lectivo
