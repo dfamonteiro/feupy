@@ -334,9 +334,16 @@ class Course:
         Returns:
             A list of dictionaries (see :func:`exams.exams` for more information about the dictionaries)
         """
-        url = self.base_url.replace("/en/", "/pt/") + _utils.SIG_URLS["course exams"] + "?" + _urllib.parse.urlencode({"p_curso_id" : str(self.pv_curso_id)})
+        res = []
+        
+        for faculty_url in self.involved_organic_units:
+            url = faculty_url.replace("/en/", "/pt/") +\
+                  _utils.SIG_URLS["course exams"] + "?" +\
+                  _urllib.parse.urlencode({"p_curso_id" : str(self.pv_curso_id)})
+            
+            res.extend(_exams.exams(url, use_cache, faculty_url))
 
-        return _exams.exams(url, use_cache)
+        return res
 
 
     @classmethod
