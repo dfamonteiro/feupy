@@ -103,9 +103,13 @@ def scrape_html_table(bs_table, f = lambda tags_list, index : list( map(lambda t
 def trim_html(html):
     """Takes a html string as input and returns the html without any styles nor javascript"""
     cleaner = Cleaner()
-    cleaner.scripts    = True
-    cleaner.javascript = True # Get rid of the javascript and the style
-    cleaner.style      = True
+    
+    cleaner.scripts         = True
+    cleaner.javascript      = True  # Get rid of the javascript and the style
+    cleaner.style           = True
+
+    cleaner.meta            = False # Keeping the meta tags is important for page redirection purposes
+    cleaner.safe_attrs_only = False
 
     return cleaner.clean_html(html)
 
