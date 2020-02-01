@@ -2,13 +2,12 @@ import datetime as _datetime
 
 import bs4 as _bs4
 
-from . import _internal_utils as _utils
 from . import cache as _cache
 from . import _CurricularUnit
 
 __all__ = ["exams"]
 
-def exams(url : str, use_cache : bool = True) -> list:
+def exams(url : str, use_cache : bool = True, base_url : str = "https://sigarra.up.pt/feup/en/") -> list:
     """Returns a list of dictionaries.
 
     Each dictionary represents an exam and has 6 keys:
@@ -100,7 +99,7 @@ def exams(url : str, use_cache : bool = True) -> list:
     tags = [tag for tag in content.find_all("a")]
     tags.pop(0)
 
-    urls = [_utils.BASE_URL_PT + tag["href"] for tag in tags if "exa_geral.exame_view" in tag["href"]]
+    urls = [base_url.replace("/en/", "/pt/") + tag["href"] for tag in tags if "exa_geral.exame_view" in tag["href"]]
     _cache.get_html_async(urls, use_cache = use_cache) # Refresh the cache
     return [_parse_exam_page(url) for url in urls]
 
