@@ -9,22 +9,20 @@ from bs4 import BeautifulSoup
 from lxml.html.clean import Cleaner
 from PIL import Image
 
-BASE_URL    = "https://sigarra.up.pt/feup/en/"
-BASE_URL_PT = "https://sigarra.up.pt/feup/pt/" # Some pages don't have an english translation, such as "personal timetable"
 SIG_URLS = {
     "authentication"                      : "vld_validacao.validacao",
     "student page"                        : "fest_geral.cursos_list",
-    "academic pathway"                    : BASE_URL    + "fest_geral.curso_percurso_academico_view",
-    "position in the plan"                : BASE_URL    + "fest_geral.curso_posicao_plano_view",
+    "academic pathway"                    : "fest_geral.curso_percurso_academico_view",
+    "position in the plan"                : "fest_geral.curso_posicao_plano_view",
     "courses units"                       : "fest_geral.ucurr_inscricoes_list",
-    "status and more"                     : BASE_URL    + "fest_geral.estatutos_regimes_view",
-    "ingress data"                        : BASE_URL    + "fest_geral.info_ingresso_view",
+    "status and more"                     : "fest_geral.estatutos_regimes_view",
+    "ingress data"                        : "fest_geral.info_ingresso_view",
     "classes data"                        : "it_geral.resultado_aluno",
-    "personal timetable"                  : "hor_geral.estudantes_view", # This page is only available in portuguese
+    "personal timetable"                  : "hor_geral.estudantes_view",
     "picture"                             : "fotografias_service.foto",
     "curricular unit"                     : "ucurr_geral.ficha_uc_view",
     "curricular unit students"            : "fest_geral.estudantes_inscritos_list",
-    "curricular unit other occurrences"   : BASE_URL    + "ucurr_geral.ficha_uc_list",
+    "curricular unit other occurrences"   : "ucurr_geral.ficha_uc_list",
     "curricular unit statistics"          : "est_geral.dist_result_ocorr",
     "curricular unit grades distribution" : "est_geral.dist_result_ocorr_detail",
     "curricular unit stats history"       : "est_geral.ucurr_result_resumo",
