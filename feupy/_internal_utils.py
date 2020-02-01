@@ -22,16 +22,16 @@ SIG_URLS = {
     "classes data"                        : "it_geral.resultado_aluno",
     "personal timetable"                  : "hor_geral.estudantes_view", # This page is only available in portuguese
     "picture"                             : "fotografias_service.foto",
-    "curricular unit"                     : BASE_URL    + "ucurr_geral.ficha_uc_view",
-    "curricular unit students"            : BASE_URL    + "fest_geral.estudantes_inscritos_list",
+    "curricular unit"                     : "ucurr_geral.ficha_uc_view",
+    "curricular unit students"            : "fest_geral.estudantes_inscritos_list",
     "curricular unit other occurrences"   : BASE_URL    + "ucurr_geral.ficha_uc_list",
-    "curricular unit statistics"          : BASE_URL    + "est_geral.dist_result_ocorr",
-    "curricular unit grades distribution" : BASE_URL    + "est_geral.dist_result_ocorr_detail",
-    "curricular unit stats history"       : BASE_URL    + "est_geral.ucurr_result_resumo",
-    "curricular unit classes"             : BASE_URL    + "it_listagem.lista_cursos_disciplina",
-    "curricular unit results"             : BASE_URL    + "lres_geral.show_pautas_resul",
-    "curricular unit timetable"           : BASE_URL_PT + "hor_geral.ucurr_view",
-    "curricular unit exams"               : BASE_URL_PT + "exa_geral.mapa_de_exames",
+    "curricular unit statistics"          : "est_geral.dist_result_ocorr",
+    "curricular unit grades distribution" : "est_geral.dist_result_ocorr_detail",
+    "curricular unit stats history"       : "est_geral.ucurr_result_resumo",
+    "curricular unit classes"             : "it_listagem.lista_cursos_disciplina",
+    "curricular unit results"             : "lres_geral.show_pautas_resul",
+    "curricular unit timetable"           : "hor_geral.ucurr_view",
+    "curricular unit exams"               : "exa_geral.mapa_de_exames",
     "teacher"                             : "func_geral.formview",
     "course"                              : "cur_geral.cur_view",
     "course classes"                      : "hor_geral.lista_turmas_curso",
@@ -103,7 +103,7 @@ def scrape_html_table(bs_table, f = lambda tags_list, index : list( map(lambda t
 def trim_html(html):
     """Takes a html string as input and returns the html without any styles nor javascript"""
     cleaner = Cleaner()
-    
+
     cleaner.scripts         = True
     cleaner.javascript      = True  # Get rid of the javascript and the style
     cleaner.style           = True

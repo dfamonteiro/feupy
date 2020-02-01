@@ -99,12 +99,13 @@ class CurricularUnit:
         'webpage_url': None}
     """
     __slots__ = ["pv_ocorrencia_id", "url", "name", "code", "acronym", "academic_year", "semester", "has_moodle", "is_active", "webpage_url", 
-                 "number_of_students", "curricular_year", "ECTS_credits", "regents", "teachers", "text"]
+                 "number_of_students", "curricular_year", "ECTS_credits", "regents", "teachers", "text", "base_url"]
     
     def __init__(self, pv_ocorrencia_id : int, use_cache : bool = True, base_url : str = "https://sigarra.up.pt/feup/en/"):
 
         self.pv_ocorrencia_id = pv_ocorrencia_id
-        self.url = _utils.SIG_URLS["curricular unit"] + "?" + _urllib.parse.urlencode({"pv_ocorrencia_id" : str(pv_ocorrencia_id)})
+        self.base_url = base_url
+        self.url = self.base_url + _utils.SIG_URLS["curricular unit"] + "?" + _urllib.parse.urlencode({"pv_ocorrencia_id" : str(pv_ocorrencia_id)})
         
         html = _cache.get_html(url = self.url, use_cache = use_cache) # Getting the html
         soup = _bs4.BeautifulSoup(html, "lxml")
@@ -120,6 +121,9 @@ class CurricularUnit:
 
             html = _cache.get_html(url = self.url, use_cache = use_cache) # Getting the html
             soup = _bs4.BeautifulSoup(html, "lxml")
+        
+        index = self.url.index(_utils.SIG_URLS["curricular unit"])
+        self.base_url = self.url[:index]
         
         if "The School responsible for the occurrence was not found." in html or "Não foi encontrada a ocorrência especificada." in html:
             raise ValueError(f"Curricular unit with pv_ocorrencia_id {pv_ocorrencia_id} doesn't exist")
@@ -169,16 +173,16 @@ class CurricularUnit:
             teachers_links = filter(lambda tag: "func_geral.formview" in str(tag), contents.find_all("a"))
         else:
             teachers_links = filter(lambda tag: "func_geral.formview" in tag["href"], teachers_div.find_all("a"))
-        teachers_urls = [_utils.BASE_URL + tag["href"] for tag in teachers_links]
+        teachers_urls = [self.base_url + tag["href"] for tag in teachers_links]
         _cache.get_html_async(teachers_urls)
-        self.teachers  = tuple(_Teacher.Teacher.from_url(url) for url in teachers_urls)
+        self.teachers  = tuple(_Teacher.Teacher.from_url(url, base_url = self.base_url) for url in teachers_urls)
 
         regents_div    = contents.find("div", {"class" : "responsabilidades"})
         if regents_div == None:
             self.regents = ()
         else:
             regents_links  = filter(lambda tag: "p_codigo" in tag["href"], regents_div.find_all("a")) # If "p_codigo" is in the url, then it's a teacher
-            self.regents   = tuple((_Teacher.Teacher.from_a_tag(link) for link in regents_links))
+            self.regents   = tuple((_Teacher.Teacher.from_a_tag(link, base_url = self.base_url) for link in regents_links))
 
         text = contents.text
         beggining_index = text.find("Teaching language")
@@ -245,7 +249,7 @@ class CurricularUnit:
             # I can't distinguish between these two situations, therefore I'm
             # returning an empty dict. I prefer this approach to raising an (perhaps erroneous) exception
         
-        url = _utils.BASE_URL_PT + tag["href"]
+        url = self.base_url.replace("/en/", "/pt/") + tag["href"]
 
         html = credentials.get_html(url) # contents page
         soup = _bs4.BeautifulSoup(html, "lxml")
@@ -303,7 +307,7 @@ class CurricularUnit:
                         if file_type == "file":
                             
                             upload_time = _datetime.date(*map(int, p.find("span", {"class" : "t"}).string.split("-")[1].split("/")))
-                            url = _utils.BASE_URL_PT + p.a["href"]
+                            url = self.base_url.replace("/en/", "/pt/") + p.a["href"]
                         else:
                             upload_time = _datetime.date.today() # A placeholder value
                             url = p.a["href"]
@@ -357,7 +361,7 @@ class CurricularUnit:
                 return None                               
             
             student_username = int(tags_list[0].string)
-            student = _Student.Student(student_username)
+            student = _Student.Student(student_username, base_url = self.base_url)
 
             status = tags_list[2].string.strip()
 
@@ -370,7 +374,7 @@ class CurricularUnit:
         n_pages    = (self.number_of_students // 50) + 1
         pages_urls = []
         for n in range(1, n_pages + 1):
-            url = _utils.SIG_URLS["curricular unit students"] + "?" + _urllib.parse.urlencode({"pv_ocorrencia_id" : str(self.pv_ocorrencia_id), "pv_num_pag" : str(n)})
+            url = self.base_url + _utils.SIG_URLS["curricular unit students"] + "?" + _urllib.parse.urlencode({"pv_ocorrencia_id" : str(self.pv_ocorrencia_id), "pv_num_pag" : str(n)})
             pages_urls.append(url)
         
         for html in credentials.get_html_async(pages_urls):
@@ -382,7 +386,7 @@ class CurricularUnit:
         student_urls = []
         for table in tables: # get all the student urls
             student_usernames = _re.findall(r"(\d\d\d\d\d\d\d\d\d)", str(table))
-            student_urls.extend(_utils.SIG_URLS["student page"] + "?" + _urllib.parse.urlencode({"pv_num_unico" : username}) for username in student_usernames)
+            student_urls.extend(self.base_url + _utils.SIG_URLS["student page"] + "?" + _urllib.parse.urlencode({"pv_num_unico" : username}) for username in student_usernames)
         _cache.get_html_async(student_urls, use_cache = use_cache) # Refreshing the cache
 
         for table in tables:
@@ -397,7 +401,7 @@ class CurricularUnit:
         Returns:
             A list of dicts
         """
-        html = credentials.get_html(_utils.SIG_URLS["curricular unit timetable"], {"pv_ocorrencia_id" : self.pv_ocorrencia_id})
+        html = self.base_url.replace("/en/", "/pt/") + credentials.get_html(_utils.SIG_URLS["curricular unit timetable"], {"pv_ocorrencia_id" : self.pv_ocorrencia_id})
         soup = _bs4.BeautifulSoup(html, "lxml")
 
         return _timetable.parse_current_timetable(credentials, soup.a["href"])
@@ -412,7 +416,7 @@ class CurricularUnit:
             list of dictionaries (see :obj:`timetable.parse_timetable` for an example
             of such a list).
         """
-        html = credentials.get_html(_utils.SIG_URLS["curricular unit timetable"], {"pv_ocorrencia_id" : self.pv_ocorrencia_id})
+        html = self.base_url.replace("/en/", "/pt/") + credentials.get_html(_utils.SIG_URLS["curricular unit timetable"], {"pv_ocorrencia_id" : self.pv_ocorrencia_id})
         soup = _bs4.BeautifulSoup(html, "lxml")
 
         return _timetable.parse_timetables(credentials, soup.a["href"])
@@ -456,7 +460,7 @@ class CurricularUnit:
         soup = _bs4.BeautifulSoup(html, "lxml")
 
         tag = soup.find("a", {"title" : "Other occurrences"})
-        url = _utils.BASE_URL + tag["href"]
+        url = self.base_url + tag["href"]
 
         html = _cache.get_html(url)         # Now we have the html of the "other occurrences" page 
         soup = _bs4.BeautifulSoup(html, "lxml")
@@ -464,9 +468,9 @@ class CurricularUnit:
         table = soup.find_all("table", {"class" : "dados"})[1]
         course_tags = table.find_all("a")
 
-        _cache.get_html_async((_utils.BASE_URL + a_tag["href"] for a_tag in course_tags), use_cache = use_cache) # Refresh the cache
+        _cache.get_html_async((self.base_url + a_tag["href"] for a_tag in course_tags), use_cache = use_cache) # Refresh the cache
 
-        return tuple(CurricularUnit.from_a_tag(a_tag) for a_tag in course_tags)
+        return tuple(CurricularUnit.from_a_tag(a_tag, base_url = self.base_url) for a_tag in course_tags)
         
     def stats(self, credentials : _Credentials.Credentials) -> tuple:
         """Returns a tuple with 3 ints:
@@ -493,7 +497,7 @@ class CurricularUnit:
             (220, 185, 162)
         """
         
-        html = credentials.get_html(_utils.SIG_URLS["curricular unit statistics"], params = {"pv_ocorrencia_id" : str(self.pv_ocorrencia_id)})
+        html = credentials.get_html(self.base_url + _utils.SIG_URLS["curricular unit statistics"], params = {"pv_ocorrencia_id" : str(self.pv_ocorrencia_id)})
         soup = _bs4.BeautifulSoup(html, "lxml")
 
         if "Não foram encontrados estudantes inscritos na ocorrência indicada." in html:
@@ -547,7 +551,7 @@ class CurricularUnit:
                 20: 1}
         """
 
-        html = credentials.get_html(_utils.SIG_URLS["curricular unit grades distribution"], params = {"pv_ocorrencia_id" : str(self.pv_ocorrencia_id)})
+        html = credentials.get_html(self.base_url + _utils.SIG_URLS["curricular unit grades distribution"], params = {"pv_ocorrencia_id" : str(self.pv_ocorrencia_id)})
         soup = _bs4.BeautifulSoup(html, "lxml")
 
         if "Não foram encontrados estudantes avaliados na ocorrência indicada." in html:
@@ -608,7 +612,7 @@ class CurricularUnit:
              ... ]
         """
         
-        html = credentials.get_html(_utils.SIG_URLS["curricular unit stats history"], params = {"pv_ocorrencia_id" : str(self.pv_ocorrencia_id), "pv_n_prev_alet" : "20"})
+        html = credentials.get_html(self.base_url + _utils.SIG_URLS["curricular unit stats history"], params = {"pv_ocorrencia_id" : str(self.pv_ocorrencia_id), "pv_n_prev_alet" : "20"})
         soup = _bs4.BeautifulSoup(html, "lxml")
 
         table = soup.find_all("table")[-1] # get the last table of the page
@@ -670,7 +674,7 @@ class CurricularUnit:
                 '...'     : [...]
             }
         """
-        html = credentials.get_html(_utils.SIG_URLS["curricular unit classes"], params = {"pv_ocorrencia_id" : str(self.pv_ocorrencia_id)}) # this html redirects us to the url we want
+        html = credentials.get_html(self.base_url + _utils.SIG_URLS["curricular unit classes"], params = {"pv_ocorrencia_id" : str(self.pv_ocorrencia_id)}) # this html redirects us to the url we want
         soup = _bs4.BeautifulSoup(html, "lxml")
 
         tags = soup.find_all("a")
@@ -678,7 +682,7 @@ class CurricularUnit:
         if len(tags) == 1:
             urls = [tags[0]["href"]]
         else:
-            urls = [_utils.BASE_URL + tag["href"] for tag in tags if "it_listagem.lista_turma_disciplina" in str(tag)]
+            urls = [self.base_url + tag["href"] for tag in tags if "it_listagem.lista_turma_disciplina" in str(tag)]
 
         result = {}
 
@@ -687,7 +691,7 @@ class CurricularUnit:
             soup = _bs4.BeautifulSoup(html, "lxml")
             contents = soup.find("div", {"id" : "conteudo"})
 
-            all_students_urls = (_utils.BASE_URL + tag["href"] for tag in contents.find_all("a") if tag.parent.name == "td")
+            all_students_urls = (self.base_url + tag["href"] for tag in contents.find_all("a") if tag.parent.name == "td")
             _cache.get_html_async(all_students_urls, use_cache = use_cache) # refresh the cache
             
             title = contents.find("h3") # starting point
@@ -702,7 +706,7 @@ class CurricularUnit:
                 if table == None:
                     students = []
                 else:
-                    students = [_Student.Student.from_a_tag(tag) for tag in table.find_all("a")]
+                    students = [_Student.Student.from_a_tag(tag, base_url = self.base_url) for tag in table.find_all("a")]
 
                 result[class_name] = students
 
@@ -717,9 +721,9 @@ class CurricularUnit:
         Returns:
             A list of dictionaries (see :func:`exams.exams` for more information about the dictionaries)
         """
-        url = _utils.SIG_URLS["curricular unit exams"] + "?" + _urllib.parse.urlencode({"p_ocorr_id" : str(self.pv_ocorrencia_id)})
+        url = self.base_url.replace("/en/", "/pt/") + _utils.SIG_URLS["curricular unit exams"] + "?" + _urllib.parse.urlencode({"p_ocorr_id" : str(self.pv_ocorrencia_id)})
 
-        return _exams.exams(url, use_cache)
+        return _exams.exams(url, use_cache, base_url = self.base_url)
 
     def results(self, credentials : _Credentials.Credentials, use_cache : bool = True) -> dict:
         """Returns a dictionary which maps a string representing the exams season
@@ -764,7 +768,7 @@ class CurricularUnit:
                                     (Student(201800019), 'RFC'),
                                     ...]}
         """
-        html = credentials.get_html(_utils.SIG_URLS["curricular unit results"], params = {"pv_ocorr_id" : str(self.pv_ocorrencia_id)})
+        html = credentials.get_html(self.base_url + _utils.SIG_URLS["curricular unit results"], params = {"pv_ocorr_id" : str(self.pv_ocorrencia_id)})
         soup = _bs4.BeautifulSoup(html, "lxml")
 
         if "Não tem permissões para aceder a este conteúdo" in html:
@@ -777,7 +781,7 @@ class CurricularUnit:
         for tag in tags:
             result[tag.string] = []
 
-            url = _utils.BASE_URL + tag["href"]
+            url = self.base_url + tag["href"]
 
             html = credentials.get_html(url)
             soup = _bs4.BeautifulSoup(html, "lxml")
@@ -789,7 +793,7 @@ class CurricularUnit:
             student_urls = []
             for row in rows: # get all the student urls
                 student_usernames = _re.findall(r"(\d\d\d\d\d\d\d\d\d)", str(row))
-                student_urls.extend(_utils.SIG_URLS["student page"] + "?" + _urllib.parse.urlencode({"pv_num_unico" : username}) for username in student_usernames)
+                student_urls.extend(self.base_url + _utils.SIG_URLS["student page"] + "?" + _urllib.parse.urlencode({"pv_num_unico" : username}) for username in student_usernames)
             _cache.get_html_async(student_urls, use_cache = use_cache) # Refreshing the cache
 
             for row in rows:
@@ -801,7 +805,7 @@ class CurricularUnit:
                 except:
                     grade = grade_str
                 
-                result[tag.string].append((_Student.Student(username), grade))
+                result[tag.string].append((_Student.Student(username, base_url = self.base_url), grade))
         
         return result
 
@@ -834,7 +838,11 @@ class CurricularUnit:
         
         pv_ocorrencia_id = int(matches[0])
 
-        return CurricularUnit(pv_ocorrencia_id, use_cache)
+        matches = _re.findall(r"^https?://sigarra\.up\.pt/(\w+)/", url)
+        if len(matches) == 1:
+            base_url = f"https://sigarra.up.pt/{matches[0]}/en/"
+
+        return CurricularUnit(pv_ocorrencia_id, use_cache, base_url = base_url)
     
     @classmethod
     def from_a_tag(cls, bs4_tag : _bs4.Tag, use_cache : bool = True, base_url : str = "https://sigarra.up.pt/feup/en/"):
@@ -851,7 +859,7 @@ class CurricularUnit:
         if bs4_tag.name != "a":
             raise ValueError(f"from_a_tag() 'bs4_tag' argument must be an anchor tag, not '{bs4_tag.name}'")
         
-        return CurricularUnit.from_url(bs4_tag["href"], use_cache)
+        return CurricularUnit.from_url(bs4_tag["href"], use_cache, base_url = base_url)
     
     # Comparisons between curricular units are made with the pv_ocorrencia_id
     def __eq__(self, other):
