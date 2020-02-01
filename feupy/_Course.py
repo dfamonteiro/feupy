@@ -48,7 +48,7 @@ class Course:
         # João Carlos Pascoal Faria
         # Maria Cristina de Carvalho Alves Ribeiro
     """
-    __slots__ = ["pv_curso_id","pv_ano_lectivo", "url", "name", "official_code", "directors", "acronym", "text", "base_url"]
+    __slots__ = ["pv_curso_id","pv_ano_lectivo", "url", "name", "official_code", "directors", "acronym", "text", "base_url", "involved_organic_units"]
 
     def __init__(self, pv_curso_id : int, pv_ano_lectivo : int = None, use_cache : bool = True, base_url : str = "https://sigarra.up.pt/feup/en/"):
         
@@ -91,7 +91,36 @@ class Course:
             self.text = contents.find("div", {"class" : "col-md-8 col-sm-6 col-xs-12"}).text
         except:
             self.text = None
+        
+        for h3 in soup.find_all("h3"):
+            if h3.text == "Involved Organic Units":
+                involved_organic_units = []
 
+                div = h3.find_next("div")
+                for a in div.find_all("a"):
+                    # I'm well aware that hardcoding values is not good practice.
+                    # However, trying to follow all the redirects has turned out to be rather unfeasable.
+                    # Trust me, I tried and thoroughly failed:(
+                    # If you think you can do better, PRs are always welcome:)
+                    if   "letras.up.pt" in a["href"]:
+                        involved_organic_units.append("https://sigarra.up.pt/flup/en/")
+                    elif "fe.up.pt"     in a["href"]:
+                        involved_organic_units.append("https://sigarra.up.pt/feup/en/")
+                    elif "fep.up.pt"    in a["href"]:
+                        involved_organic_units.append("https://sigarra.up.pt/fep/en/")
+                    elif "fba.up.pt"    in a["href"]:
+                        involved_organic_units.append("https://sigarra.up.pt/fbaup/en/")
+                    elif "icbas.up.pt"  in a["href"]:
+                        involved_organic_units.append("https://sigarra.up.pt/icbas/en/")
+                    elif "fc.up.pt"     in a["href"]:
+                        involved_organic_units.append("https://sigarra.up.pt/fcup/en/")
+                    elif "fa.up.pt"     in a["href"]:
+                        involved_organic_units.append("https://sigarra.up.pt/faup/en/")
+                
+                self.involved_organic_units = tuple(involved_organic_units)
+                break
+        else:
+            self.involved_organic_units = (self.base_url,)
 
     def classes(self, credentials : _Credentials.Credentials) -> dict:
         """Returns a dictionary which maps the course's classes
