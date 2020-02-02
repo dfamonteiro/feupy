@@ -27,7 +27,7 @@ pip install feupy
 4. Celebrate!
 
 ## Building the docs and checking them out locally
-1. Make sure you have latest version of [sphinx](https://pypi.org/project/sphinx/) installed
+1. Make sure you have the latest version of [sphinx](https://pypi.org/project/sphinx/) installed
 2. Change your working directory to docs/
 3. Run this command
    ```
