@@ -445,7 +445,10 @@ class Course:
         return hash(self._unique_value())
     
     def __repr__(self):
-        return f"Course({self.pv_curso_id}, {self.pv_ano_lectivo})"
+        if self.base_url == "https://sigarra.up.pt/feup/en/":
+            return f"Course({self.pv_curso_id}, {self.pv_ano_lectivo})"
+        else:
+            return f"Course({self.pv_curso_id}, {self.pv_ano_lectivo}, base_url = {self.base_url})"
     
     def __str__(self):
         return f"{self.acronym} ({self.pv_ano_lectivo}/{self.pv_ano_lectivo + 1})"

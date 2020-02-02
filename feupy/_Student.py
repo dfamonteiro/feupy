@@ -268,7 +268,10 @@ class Student:
         return hash(self.username)
     
     def __repr__(self):
-        return f"Student({self.username})"
+        if self.base_url == "https://sigarra.up.pt/feup/en/":
+            return f"Student({self.username})"
+        else:
+            return f"Student({self.username}, base_url = {self.base_url})"
     
     def __str__(self):
         return f"{self.name} ({self.username})"

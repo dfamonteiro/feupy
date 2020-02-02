@@ -169,4 +169,7 @@ class Credentials:
         return {attribute : getattr(self, attribute) for attribute in self.__slots__}
     
     def __repr__(self):
-        return f"Credentials({self.username})"
+        if self.base_url == "https://sigarra.up.pt/feup/en/":
+            return f"Credentials({self.username})"
+        else:
+            return f"Credentials({self.username}, base_url = {self.base_url})"

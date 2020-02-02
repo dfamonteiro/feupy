@@ -900,7 +900,10 @@ class CurricularUnit:
         return hash(self.pv_ocorrencia_id)
     
     def __repr__(self):
-        return f"CurricularUnit({self.pv_ocorrencia_id})"
+        if self.base_url == "https://sigarra.up.pt/feup/en/":
+            return f"CurricularUnit({self.pv_ocorrencia_id})"
+        else:
+            return f"CurricularUnit({self.pv_ocorrencia_id}, base_url = {self.base_url})"
     
     def __str__(self):
         return f"{self.acronym} ({self.academic_year}/{self.academic_year + 1})" # e.g. ALGE (2019/2019)
