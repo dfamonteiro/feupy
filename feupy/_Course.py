@@ -102,6 +102,10 @@ class Course:
                     # However, trying to follow all the redirects has turned out to be rather unfeasable.
                     # Trust me, I tried and thoroughly failed:(
                     # If you think you can do better, PRs are always welcome:)
+
+                    if "href" not in a:
+                        continue
+
                     if   "letras.up.pt" in a["href"]:
                         involved_organic_units.append("https://sigarra.up.pt/flup/en/")
                     elif "fe.up.pt"     in a["href"]:
