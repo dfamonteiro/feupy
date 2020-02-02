@@ -13,8 +13,8 @@ All web requests that don't need a special permission (that is, you don't need t
 pip install feupy
 ```
 
-## [Documentation](https://feupy.readthedocs.io/en/master)
-[Click me](https://feupy.readthedocs.io/en/master)
+## [Documentation](https://feupy.readthedocs.io)
+[Click me](https://feupy.readthedocs.io)
 
 ## Building the package and uploading to PyPI
 1. Change your working directory to the root of this project in your computer
