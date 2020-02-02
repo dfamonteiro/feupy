@@ -25,7 +25,6 @@ class User:
         course      (:obj:`Course`): The course related to this pv_fest_id
         credentials (:obj:`Credentials`): A :obj:`Credentials` object
             (This is done to avoid having to pass the same :obj:`Credentials` object to every function)
-        base_url (str): The url of your faculty (in english) (defaults to "https://sigarra.up.pt/feup/en/")
 
     Example::
 
