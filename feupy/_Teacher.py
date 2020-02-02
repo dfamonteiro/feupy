@@ -20,6 +20,7 @@ class Teacher:
     Args:
         p_codigo (int): The id of the teacher
         use_cache (:obj:`bool`, optional): Attempts to use the cache if True, otherwise it will fetch from sigarra
+        base_url (:obj:`str`, optional): The url of the faculty (in english) (defaults to "https://sigarra.up.pt/feup/en/")
 
 
     Attributes:

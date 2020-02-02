@@ -20,6 +20,7 @@ class Credentials:
             You will be prompted for your username if you don't pass a username as an argument
         password (:obj:`str`, optional): Your password.
             You will be prompted for your password if you don't pass a password as an argument
+        base_url (:obj:`str`, optional): The url of the faculty (in english) (defaults to "https://sigarra.up.pt/feup/en/")
     
     Attributes:
         username (int or str): Your username (e.g. 201806185)

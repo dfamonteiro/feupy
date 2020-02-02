@@ -19,7 +19,7 @@ class Course:
         pv_curso_id (int): The id of the course, for example MIEIC's id is 742
         pv_ano_lectivo (:obj:`int`, optional): The year of this course. It defaults to the current year (i.e. 2019, at the time of writing)
         use_cache (:obj:`bool`, optional): Attempts to use the cache if True, otherwise it will fetch from sigarra
-
+        base_url (:obj:`str`, optional): The url of the faculty (in english) (defaults to "https://sigarra.up.pt/feup/en/")
 
     Attributes:
         pv_curso_id      (int): The id of the course
