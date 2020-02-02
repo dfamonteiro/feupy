@@ -38,6 +38,7 @@ class CurricularUnit:
         regents            (tuple(:obj:`Teacher`))
         teachers           (tuple(:obj:`Teacher`))
         text               (string): Basically a text dump starting from "Teaching language"
+        base_url           (str): The url of the curricular unit's faculty (in english) (defaults to "https://sigarra.up.pt/feup/en/")
 
     Example::
 

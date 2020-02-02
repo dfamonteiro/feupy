@@ -38,7 +38,7 @@ class Teacher:
         profession       (str)
         department       (str)
         presentation     (str): The presentation of this teacher
-        base_url         (str): The url of your faculty (in english) (defaults to "https://sigarra.up.pt/feup/en/")
+        base_url         (str): The url of the teacher's faculty (in english) (defaults to "https://sigarra.up.pt/feup/en/")
 
     Example::
 

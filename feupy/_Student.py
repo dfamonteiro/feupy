@@ -24,6 +24,7 @@ class Student:
         personal_webpage (str): Url of the student's personal page, if present. Otherwise it is set to None
         username         (int): The student's "pv_num_unico"
         url              (str): Url of the student's sigarra page
+        base_url         (str): The url of the student's faculty (in english) (defaults to "https://sigarra.up.pt/feup/en/")
         courses          (tuple(dict)): The courses this student is enrolled in
     
         Each dictionary from the courses tuple has 3 keys:

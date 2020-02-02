@@ -30,6 +30,7 @@ class Course:
         directors        (tuple(:obj:`Teacher`)): The directors of this course
         acronym          (str): The acronym of this course
         text             (str or None): The text that can be found in the course's page
+        base_url         (str): The url of the course's faculty (in english) (defaults to "https://sigarra.up.pt/feup/en/")
 
     Example::
 
