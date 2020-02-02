@@ -14,7 +14,7 @@ pip install feupy
 ```
 
 ## [Documentation](https://feupy.readthedocs.io/en/master)
-Click this [link](https://feupy.readthedocs.io/en/master)
+[Click me](https://feupy.readthedocs.io/en/master)
 
 ## Building the package and uploading to PyPI
 1. Change your working directory to the root of this project in your computer
@@ -101,6 +101,7 @@ ResearcherID  ORCID  Google Scholar Citations  DBLP Author  Scopus Author
 >>> 
 >>> pprint(vars(jlopes))
 {'acronym': 'JCL',
+ 'base_url': 'https://sigarra.up.pt/feup/en/',
  'career': 'Pessoal Docente de Universidades',
  'category': 'Professor Auxiliar',
  'department': 'Department of Informatics Engineering',
@@ -136,6 +137,7 @@ ResearcherID  ORCID  Google Scholar Citations  DBLP Author  Scopus Author
 {'ECTS_credits': 6.0,
  'academic_year': 2018,
  'acronym': 'FPRO',
+ 'base_url': 'https://sigarra.up.pt/feup/en/',
  'code': 'EIC0005',
  'curricular_year': 1,
  'has_moodle': True,
@@ -292,7 +294,9 @@ ResearcherID  ORCID  Google Scholar Citations  DBLP Author  Scopus Author
 >>> 
 >>> pprint(vars(mieic))
 {'acronym': 'MIEIC',
+ 'base_url': 'https://sigarra.up.pt/feup/en/'
  'directors': (Teacher(210006), Teacher(209566)),
+ 'involved_organic_units': ('https://sigarra.up.pt/feup/en/',),
  'name': 'Master in Informatics and Computing Engineering',
  'official_code': '9459',
  'pv_ano_lectivo': 2019,
