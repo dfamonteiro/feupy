@@ -161,6 +161,7 @@ class Teacher:
         Args:
             url (str): The url of the teacher's sigarra page
             use_cache (:obj:`bool`, optional): Attempts to use the cache if True, otherwise it will fetch from sigarra
+            base_url (:obj:`str`, optional): The url of the faculty (in english) (defaults to "https://sigarra.up.pt/feup/en/")
         
         Returns:
             A :obj:`Teacher` object
@@ -195,6 +196,7 @@ class Teacher:
         Args:
             bs4_tag (:obj:`bs4.tag`):
             use_cache (:obj:`bool`, optional): Attempts to use the cache if True, otherwise it will fetch from sigarra
+            base_url (:obj:`str`, optional): The url of the faculty (in english) (defaults to "https://sigarra.up.pt/feup/en/")
         
         Returns:
             A :obj:`Teacher` object
