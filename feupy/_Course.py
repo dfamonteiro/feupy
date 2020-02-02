@@ -22,15 +22,16 @@ class Course:
         base_url (:obj:`str`, optional): The url of the faculty (in english) (defaults to "https://sigarra.up.pt/feup/en/")
 
     Attributes:
-        pv_curso_id      (int): The id of the course
-        pv_ano_lectivo   (int): The year of this course's page
-        url              (str): Url of the course's sigarra page
-        name             (str): The name the course
-        official_code    (str): The official code
-        directors        (tuple(:obj:`Teacher`)): The directors of this course
-        acronym          (str): The acronym of this course
-        text             (str or None): The text that can be found in the course's page
-        base_url         (str): The url of the course's faculty (in english) (defaults to "https://sigarra.up.pt/feup/en/")
+        pv_curso_id            (int): The id of the course
+        pv_ano_lectivo         (int): The year of this course's page
+        url                    (str): Url of the course's sigarra page
+        name                   (str): The name the course
+        official_code          (str): The official code
+        directors              (tuple(:obj:`Teacher`)): The directors of this course
+        acronym                (str): The acronym of this course
+        text                   (str or None): The text that can be found in the course's page
+        base_url               (str): The url of the course's faculty (in english) (defaults to "https://sigarra.up.pt/feup/en/")
+        involved_organic_units (tuple(str)): All the faculties involved with this course
 
     Example::
 
@@ -104,7 +105,7 @@ class Course:
                     # Trust me, I tried and thoroughly failed:(
                     # If you think you can do better, PRs are always welcome:)
 
-                    if "href" not in a:
+                    if "href" not in a.attrs:
                         continue
 
                     if   "letras.up.pt" in a["href"]:
