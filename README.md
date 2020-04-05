@@ -40,6 +40,13 @@ pip install feupy
    ```
 6. Open a web browser at [localhost:8080](http://127.0.0.1:8080)
 
+## Running the tests
+1. Change your working directory to the root of this project in your computer
+2. Run this command
+   ```
+   python -m unittest
+   ```
+3. Hope that the tests pass
 
 ## Acknowledgements
 I would like to thank the following people:
