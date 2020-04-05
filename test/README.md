@@ -7,7 +7,7 @@ The reason for this is that pretty much every method and function in `feupy` rel
 
 2. What happens if a sigarra update changes the html of the pages but I forget to update the test urls? One can easily end in the situation that all the tests pass but `feupy` fails in the real world.
 
-Long story short, the tests in this folder are more like integration tests (with sigarra) and they make web requests in order to make sure that the tests fail if sigarra changed the html layouts.
+Long story short, the tests in this folder are more like integration tests (with sigarra) and they make web requests in order to make sure that the tests fail if sigarra changes the html layouts.
 
 ## 2. `FeupyTestCase` is `unittest.TestCase` plus a few utility methods
 
