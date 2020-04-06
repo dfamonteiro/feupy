@@ -146,7 +146,7 @@ ResearcherID  ORCID  Google Scholar Citations  DBLP Author  Scopus Author
  'acronym': 'FPRO',
  'base_url': 'https://sigarra.up.pt/feup/en/',
  'code': 'EIC0005',
- 'curricular_year': 1,
+ 'curricular_years': (1,),
  'has_moodle': True,
  'is_active': True,
  'name': 'Programming Fundamentals',
@@ -372,7 +372,7 @@ CurricularUnit(436467), CurricularUnit(436468), CurricularUnit(436469),
 CurricularUnit(436470), CurricularUnit(436471)]
 >>> len(mieic.curricular_units()) # Just out of curiosity
 74
->>> [uc for uc in mieic.curricular_units() if uc.curricular_year == 2 and uc.semester == 1] # The uc's I will have this semester
+>>> [uc for uc in mieic.curricular_units() if 2 in uc.curricular_years and uc.semester == 1] # The uc's I will have this semester
 [CurricularUnit(436433), CurricularUnit(436434), CurricularUnit(436435), CurricularUnit(436436), CurricularUnit(436437)]
 ```
 

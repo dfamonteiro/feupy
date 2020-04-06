@@ -34,7 +34,7 @@ class CurricularUnit:
         is_active          (bool): Whether or not this curricular unit is active
         webpage_url        (str or None): The webpage of this curricular unit, if it exists. Otherwise it's set to None
         number_of_students (int)
-        curricular_year    (int): usually 1-5
+        curricular_years   (tuple(int)): usually 1-5
         ECTS_credits       (float)
         regents            (tuple(:obj:`Teacher`))
         teachers           (tuple(:obj:`Teacher`))
@@ -71,7 +71,7 @@ class CurricularUnit:
         'academic_year': 2018,
         'acronym': 'MPCP',
         'code': 'EIC0016',
-        'curricular_year': 1,
+        'curricular_years': (1,),
         'has_moodle': True,
         'is_active': True,
         'name': 'Microprocessors and Personal Computers',
@@ -101,7 +101,7 @@ class CurricularUnit:
         'webpage_url': None}
     """
     __slots__ = ["pv_ocorrencia_id", "url", "name", "code", "acronym", "academic_year", "semester", "has_moodle", "is_active", "webpage_url", 
-                 "number_of_students", "curricular_year", "ECTS_credits", "regents", "teachers", "text", "base_url"]
+                 "number_of_students", "curricular_years", "ECTS_credits", "regents", "teachers", "text", "base_url"]
     
     def __init__(self, pv_ocorrencia_id : int, use_cache : bool = True, base_url : str = "https://sigarra.up.pt/feup/en/"):
 
@@ -193,13 +193,13 @@ class CurricularUnit:
         self.number_of_students = sum(n_students)
 
         if int(table[0][0]["rowspan"]) == 1: # Only 1 curricular year
-            self.curricular_year = (int(table[0][3].string),) # A tuple
+            self.curricular_years = (int(table[0][3].string),) # A tuple
         else:
-            self.curricular_year = [int(table[0][3].string)]
+            self.curricular_years = [int(table[0][3].string)]
             for row in table[1:]:
-                self.curricular_year.append(int(row[0].string))
+                self.curricular_years.append(int(row[0].string))
             
-            self.curricular_year = tuple(self.curricular_year)
+            self.curricular_years = tuple(self.curricular_years)
 
         self.ECTS_credits    = float(table[0][5].string.replace(',', '.'))
 
