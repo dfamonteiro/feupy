@@ -1,4 +1,8 @@
 import unittest
+from sys import argv
+
+def verbosity() -> bool:
+    return ('-v' in argv) or ('--verbose' in argv)
 
 class FeupyTestCase(unittest.TestCase):
     """This class is unittest.TestCase plus a few utility methods, pretty much
@@ -9,8 +13,10 @@ class FeupyTestCase(unittest.TestCase):
         only needs to contain the object attributes that you want to test."""
                 
         for key in test_vars:
-            print(f"Testing attribute '{key}'")
+            if verbosity():
+                print(f"Testing attribute '{key}'")
             self.assertEqual(getattr(test_object, key), test_vars[key])
+    
     
 
 if __name__ == '__main__':
