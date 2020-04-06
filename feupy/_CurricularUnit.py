@@ -135,10 +135,33 @@ class CurricularUnit:
         self.name = contents.find_all("h1")[1].string
 
         first_table = contents.find("table")
-        self.code, self.acronym = _utils.scrape_html_table(first_table)[0][1], _utils.scrape_html_table(first_table)[0][4]
+        self._parse_first_table(first_table)
 
         self.academic_year = _utils.parse_academic_year(contents)
 
+        self._parse_matches(contents)
+
+        self.has_moodle = "UC tem página no Moodle" in str(contents)
+
+        second_table = first_table.find_next("table", {"class" : "formulario"})
+        self._parse_second_table(second_table)
+        
+        third_table = second_table.find_next("table", {"class" : "dados"})
+        self._parse_third_table(third_table)
+        
+        self._parse_teachers(contents)
+
+        text = contents.text
+        beggining_index = text.find("Teaching language")
+        self.text = text[beggining_index:]
+
+
+    def _parse_first_table(self, first_table) -> None:
+        self.code    = _utils.scrape_html_table(first_table)[0][1]
+        self.acronym = _utils.scrape_html_table(first_table)[0][4]
+
+
+    def _parse_matches(self, contents):
         matches = _re.findall(r"Instance: \d\d\d\d/\d\d\d\d - (\d)S", str(contents))
         if len(matches) == 1:
             self.semester = matches[0]
@@ -148,35 +171,49 @@ class CurricularUnit:
             if len(matches) == 1:
                 self.semester = 'A'
             else:
-                self.semester = None                
+                self.semester = None
 
-        self.has_moodle = "UC tem página no Moodle" in str(contents)
 
-        second_table = first_table.find_next("table", {"class" : "formulario"})
+    def _parse_second_table(self, second_table) -> None:
         self.webpage_url = None
         for label, info in _utils.scrape_html_table(second_table):
             if   label == "Active? ":           # Usually the first row on the table
                 self.is_active = "Yes" in info
             elif label == "Web Page: ":         # Usually the second row on the table (optional)
                 self.webpage_url = info
-        
-        third_table = second_table.find_next("table", {"class" : "dados"})
-        third_table = _utils.scrape_html_table(third_table)
-        third_table.pop(0) # We don't care about the header row
 
-        n_students = (int(row[1]) for row in third_table if len(row) >= 2)
+
+    def _parse_third_table(self, third_table) -> None:
+        rows = third_table.find_all("tr", {"class" : "d"})
+        table = [row.find_all("td") for row in rows]
+        
+        # See https://sigarra.up.pt/feup/en/ucurr_geral.ficha_uc_view?pv_ocorrencia_id=436840
+        # for the reason why if "len(row) >= 2" is here
+        n_students = (int(row[1].string) for row in table if len(row) >= 2) 
         self.number_of_students = sum(n_students)
 
-        self.curricular_year = int(third_table[0][3])
-        self.ECTS_credits    = float(third_table[0][5].replace(',', '.'))
-        
+        if int(table[0][0]["rowspan"]) == 1: # Only 1 curricular year
+            self.curricular_year = (int(table[0][3].string),) # A tuple
+        else:
+            self.curricular_year = [int(table[0][3].string)]
+            for row in table[1:]:
+                self.curricular_year.append(int(row[0].string))
+            
+            self.curricular_year = tuple(self.curricular_year)
+
+        self.ECTS_credits    = float(table[0][5].string.replace(',', '.'))
+
+
+    def _parse_teachers(self, contents):
         teachers_div   = contents.find("div", {"class" : "horas"})
         if teachers_div == None:
             teachers_links = filter(lambda tag: "func_geral.formview" in str(tag), contents.find_all("a"))
         else:
             teachers_links = filter(lambda tag: "func_geral.formview" in tag["href"], teachers_div.find_all("a"))
+
         teachers_urls = [self.base_url + tag["href"] for tag in teachers_links]
         _cache.get_html_async(teachers_urls)
+
         self.teachers  = tuple(_Teacher.Teacher.from_url(url, base_url = self.base_url) for url in teachers_urls)
 
         regents_div    = contents.find("div", {"class" : "responsabilidades"})
@@ -186,9 +223,6 @@ class CurricularUnit:
             regents_links  = filter(lambda tag: "p_codigo" in tag["href"], regents_div.find_all("a")) # If "p_codigo" is in the url, then it's a teacher
             self.regents   = tuple((_Teacher.Teacher.from_a_tag(link, base_url = self.base_url) for link in regents_links))
 
-        text = contents.text
-        beggining_index = text.find("Teaching language")
-        self.text = text[beggining_index:]
 
     def contents(self, credentials : _Credentials.Credentials) -> dict:
         """Returns a nested dictionary structure, where each dictionary represents a folder.
