@@ -9,7 +9,7 @@ with open('requirements.txt') as f:
 
 setuptools.setup(
     name="feupy",
-    version="0.4.3",
+    version="0.4.4",
     author="Daniel Monteiro",
     author_email="up201806185@fe.up.pt",
     description="The sigarra scraping library no one asked for",
