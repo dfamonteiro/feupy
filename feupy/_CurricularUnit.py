@@ -437,7 +437,7 @@ class CurricularUnit:
         Returns:
             A list of dicts
         """
-        html = self.base_url.replace("/en/", "/pt/") + credentials.get_html(_utils.SIG_URLS["curricular unit timetable"], {"pv_ocorrencia_id" : self.pv_ocorrencia_id})
+        html = credentials.get_html(self.base_url.replace("/en/", "/pt/") + _utils.SIG_URLS["curricular unit timetable"], {"pv_ocorrencia_id" : self.pv_ocorrencia_id})
         soup = _bs4.BeautifulSoup(html, "lxml")
 
         return _timetable.parse_current_timetable(credentials, soup.a["href"])
@@ -452,7 +452,7 @@ class CurricularUnit:
             list of dictionaries (see :obj:`timetable.parse_timetable` for an example
             of such a list).
         """
-        html = self.base_url.replace("/en/", "/pt/") + credentials.get_html(_utils.SIG_URLS["curricular unit timetable"], {"pv_ocorrencia_id" : self.pv_ocorrencia_id})
+        html = credentials.get_html(self.base_url.replace("/en/", "/pt/") + _utils.SIG_URLS["curricular unit timetable"], {"pv_ocorrencia_id" : self.pv_ocorrencia_id})
         soup = _bs4.BeautifulSoup(html, "lxml")
 
         return _timetable.parse_timetables(credentials, soup.a["href"])
