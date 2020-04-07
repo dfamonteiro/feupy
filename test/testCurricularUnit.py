@@ -144,7 +144,7 @@ class TestNoTimetable(FeupyTestCase):
         cls.dissertation = CurricularUnit(436404)
     
     def test_attributes(self):
-        self.assertEqual(self.dissertation.timetable(creds), [])
+        self.assertEqual(self.dissertation.timetable(creds), None)
 
 if __name__ == '__main__':
     unittest.main()

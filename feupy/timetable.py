@@ -244,8 +244,12 @@ def _parse_side_bar(credentials: _Credentials.Credentials, url: str) -> dict:
     timetables_links_table = soup.find("table", {"class": "horario-semanas ecra"})
 
     if timetables_links_table == None:
-        matches = _re.findall(r"Semanas de (\d\d)-(\d\d)-(\d\d\d\d) a (\d\d)-(\d\d)-(\d\d\d\d)", html)[0]
-        start_day, start_month, start_year, finish_day, finish_month, finish_year  = map(int, matches)
+        matches = _re.findall(r"Semanas de (\d\d)-(\d\d)-(\d\d\d\d) a (\d\d)-(\d\d)-(\d\d\d\d)", html)
+        
+        if len(matches) == 0:
+            return {}
+
+        start_day, start_month, start_year, finish_day, finish_month, finish_year  = map(int, matches[0])
 
         start = _datetime.date(start_year, start_month, start_day)
         finish = _datetime.date(finish_year, finish_month, finish_day)
