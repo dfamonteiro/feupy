@@ -2,6 +2,7 @@ import unittest
 
 from .FeupyTestCase import FeupyTestCase
 from feupy import CurricularUnit, Teacher
+from . import creds
 
 class TestFpro(FeupyTestCase):
     @classmethod
@@ -136,6 +137,14 @@ class TestPDMPAThesis(FeupyTestCase):
             }
 
         self.assertObjectAttributes(self.thesis, expected_output)
+
+class TestNoTimetable(FeupyTestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.dissertation = CurricularUnit(436404)
+    
+    def test_attributes(self):
+        self.assertEqual(self.dissertation.timetable(creds), [])
 
 if __name__ == '__main__':
     unittest.main()
