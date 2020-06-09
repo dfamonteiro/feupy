@@ -197,8 +197,15 @@ class CurricularUnit:
         else:
             self.curricular_years = [int(table[0][3].string)]
             for row in table[1:]:
-                self.curricular_years.append(int(row[0].string))
-            
+                try:
+                    self.curricular_years.append(int(row[0].string))
+                except ValueError:
+                    # Pages like https://sigarra.up.pt/fcup/en/ucurr_geral.ficha_uc_view?pv_ocorrencia_id=444284
+                    # break this logic. TBH, I really need to rethink how this table should be represented in this 
+                    # object. Perhaps a list of lists or a dict with courses as keys? Something to think about...
+                    # Either way, for now this will do.
+                    break
+
             self.curricular_years = tuple(self.curricular_years)
 
         self.ECTS_credits    = float(table[0][5].string.replace(',', '.'))

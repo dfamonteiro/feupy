@@ -146,5 +146,13 @@ class TestNoTimetable(FeupyTestCase):
     def test_attributes(self):
         self.assertEqual(self.dissertation.timetable(creds), None)
 
+class TestAwkwardCourseTable(FeupyTestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.uc = CurricularUnit(444284)
+
+    def test_attributes(self):
+        self.assertEqual(self.uc.curricular_years, (1, 3))
+
 if __name__ == '__main__':
     unittest.main()
