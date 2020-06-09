@@ -5,7 +5,7 @@ from .FeupyTestCase import FeupyTestCase
 
 print("In order to test methods that require "
       "priviledged access to sigarra, i.e. student access, "
-      "a valid set set of credentials is required")
+      "a valid set of credentials is required")
 
 while True:
     try:
