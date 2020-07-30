@@ -105,6 +105,8 @@ class TestPF(FeupyTestCase):
             'webpage_url': 'http://www.fe.up.pt/projfeup~',
             }
 
+        self.assertEqual(len(self.pf.teachers), len(set(self.pf.teachers)))
+
         self.assertObjectAttributes(self.pf, expected_output)
 
 class TestPDMPAThesis(FeupyTestCase):
