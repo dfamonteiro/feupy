@@ -742,7 +742,7 @@ class CurricularUnit:
             while title.find_next("h3") != None:
                 title = title.find_next("h3") # Skip to the next class
 
-                class_name = _re.findall(r"Turma: ([^\s]+)", title.text)[0]
+                class_name = _re.findall(r"Class: ([^\s]+)", title.text)[0]
 
                 table = title.find_next("table")
 

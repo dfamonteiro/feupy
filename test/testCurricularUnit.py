@@ -139,6 +139,14 @@ class TestPDMPAThesis(FeupyTestCase):
 
         self.assertObjectAttributes(self.thesis, expected_output)
 
+class TestClass(FeupyTestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.vcom = CurricularUnit(446081)
+    
+    def test_attributes(self):
+        self.assertEqual(len(self.vcom.classes(creds)["4MIEIC01"]), 33)
+
 class TestNoTimetable(FeupyTestCase):
     @classmethod
     def setUpClass(cls):
