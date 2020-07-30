@@ -5,3 +5,6 @@
 
 ## 0.4.8
 * Fixed a bug regarding the presence of duplicate `Teacher` objects in a curricular unit
+
+## 0.5.0
+* Added a `full_info` optional argument to `CurricularUnit.classes()` that returns more information per student
