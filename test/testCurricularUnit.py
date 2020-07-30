@@ -1,4 +1,5 @@
 import unittest
+from datetime import datetime
 
 from .FeupyTestCase import FeupyTestCase
 from feupy import CurricularUnit, Teacher
@@ -146,6 +147,16 @@ class TestClass(FeupyTestCase):
     
     def test_attributes(self):
         self.assertEqual(len(self.vcom.classes(creds)["4MIEIC01"]), 33)
+
+        students = self.vcom.classes(creds, full_info=True)["4MIEIC01"]
+
+        self.assertEqual(students[0][1], datetime(2020, 2, 5, 15, 47))
+        self.assertFalse(students[0][2])
+        self.assertTrue(students[0][3])
+
+        self.assertTrue(students[2][2])
+        self.assertFalse(students[3][3])
+
 
 class TestNoTimetable(FeupyTestCase):
     @classmethod

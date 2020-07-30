@@ -118,3 +118,5 @@ feupy/cache.bak
 feupy/cache.dat
 feupy/cache.dir
 feupy/cache
+
+debug.py

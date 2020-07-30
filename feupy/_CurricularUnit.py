@@ -678,12 +678,14 @@ class CurricularUnit:
 
         return result
     
-    def classes(self, credentials : _Credentials.Credentials, use_cache : bool = True) -> dict:
+    def classes(self, credentials : _Credentials.Credentials, full_info = False, use_cache : bool = True) -> dict:
         """Returns a dictionary which maps a class name to a list of students
         (the students of that class).
         
         Args:
             credentials (:obj:`Credentials`): A :obj:`Credentials` object
+            full_info (:obj:`bool`, optional): Returns a list of tuples. Each tuple contains the student, the allocation date,
+                whether or not it was allocated by the administration, and whether or not the student is enrolled
             use_cache (:obj:`bool`, optional): Attempts to use the cache if True, otherwise it will fetch from sigarra
 
         Returns:
@@ -749,7 +751,31 @@ class CurricularUnit:
                 if table == None:
                     students = []
                 else:
-                    students = [_Student.Student.from_a_tag(tag, base_url = self.base_url) for tag in table.find_all("a")]
+                    if full_info:
+                        students = []
+
+                        for row in table.find_all("tr")[1:]:
+                            collumns = row.find_all("td")
+
+                            student = _Student.Student.from_a_tag(collumns[0].next, base_url = self.base_url)
+
+                            alloc_date = _utils.parse_date(str(collumns[3]))
+
+                            allocation_by_admin = "Allocation by the administration" in str(collumns[3])
+
+                            if "Verificar" in str(collumns[4]):
+                                enrolled = True
+                            elif "Delete" in str(collumns[4]):
+                                enrolled = False
+                            else:
+                                raise Exception(f"Classes parsing went wrong while parsing {self}")
+
+                            students.append(
+                                (student, alloc_date, allocation_by_admin, enrolled)
+                            )
+
+                    else:
+                        students = [_Student.Student.from_a_tag(tag, base_url = self.base_url) for tag in table.find_all("a")]
 
                 result[class_name] = students
 

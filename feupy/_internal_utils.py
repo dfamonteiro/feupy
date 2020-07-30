@@ -122,6 +122,13 @@ def parse_academic_year(html):
     academic_year = int(re.findall(r"(\d\d\d\d)/\d\d\d\d", html)[0])
     return academic_year
 
+def parse_date(date : str) -> datetime:
+    "Parses a date with the following format: day-month-year hour:minute"
+
+    day, month, year, hour, minute = map(int, re.findall(r"(\d\d)-(\d\d)-(\d\d\d\d) (\d\d):(\d\d)", date)[0])
+
+    return datetime(year, month, day, hour, minute)
+
 def get_image(url, params = None):
     """Fetches the image from the url and returns it as a PIL.Image object.
     If you need to be logged in to access the image you may want to check
