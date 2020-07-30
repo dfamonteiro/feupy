@@ -218,7 +218,7 @@ class CurricularUnit:
         else:
             teachers_links = filter(lambda tag: "func_geral.formview" in tag["href"], teachers_div.find_all("a"))
 
-        teachers_urls = [self.base_url + tag["href"] for tag in teachers_links]
+        teachers_urls = sorted(set(self.base_url + tag["href"] for tag in teachers_links)) # The links are sorted to enforce determinism
         _cache.get_html_async(teachers_urls)
 
         self.teachers  = tuple(_Teacher.Teacher.from_url(url, base_url = self.base_url) for url in teachers_urls)
