@@ -8,3 +8,6 @@
 
 ## 0.5.0
 * Added a `full_info` optional argument to `CurricularUnit.classes()` that returns more information per student
+
+## 0.5.1
+* Fixed an infinite recursion bug regarding `timetable.all_timetables()`
