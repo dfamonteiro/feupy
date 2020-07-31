@@ -366,8 +366,8 @@ def parse_timetable(credentials: _Credentials.Credentials, url: str) -> list:
         ... ]
     """
     try:
-        weeks_url_query = re.findall(r"&p_semana_inicio=\d+&p_semana_fim=\d+$", url)[0]
-    except:
+        weeks_url_query = _re.findall(r"&p_semana_inicio=\d+&p_semana_fim=\d+$", url)[0]
+    except IndexError:
         weeks_url_query = ""
 
     html = credentials.get_html(url)
@@ -421,7 +421,12 @@ def parse_timetable(credentials: _Credentials.Credentials, url: str) -> list:
 
     last_table = timetable_soup.find_next("table", {"class": "dados"})
 
-    if "Aulas Sobrepostas" in str(last_table):
+    if "pv_turma_id" in url:
+        pass 
+        # There is a weird-ass bug that shows events that are perfectly fine as overlapping, which causes runaway recursion and lots of tears
+        # See https://sigarra.up.pt/feup/pt/hor_geral.turmas_view?pv_ano_lectivo=2019&pv_periodos=2&pv_turma_id=209033&p_semana_inicio=20190922&p_semana_fim=20191012
+        # With "pv_turma_id" in url check, we prevent this from happening. I am assuming, of course, that a class timetable never has overlaps
+    elif "Aulas Sobrepostas" in str(last_table):
         rows = last_table("tr", {"class": "d"})
 
         for row in rows:
