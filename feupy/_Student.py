@@ -225,7 +225,12 @@ class Student:
         soup = _bs4.BeautifulSoup(html, "lxml")
 
         email_div = soup.find("div", {"class" : "email-institucional"})
-        email = email_div.a.contents[0] + "@" + email_div.a.contents[-1]
+
+        if email_div != None:
+            email = email_div.a.contents[0] + "@" + email_div.a.contents[-1]
+        else:
+            email = None
+
         info["email"] = email
 
         courses = [_parse_course_box(div) for div in soup.find_all("div", {"class" : "estudante-lista-curso-activo"})]
