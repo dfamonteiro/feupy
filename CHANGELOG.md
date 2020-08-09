@@ -14,3 +14,6 @@
 
 ## 0.5.2
 * Fixed bug regarding too many lines in a student's course box
+
+## 0.5.3
+* Fixed bug regarding students with no email
