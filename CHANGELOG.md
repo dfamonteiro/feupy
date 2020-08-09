@@ -17,3 +17,6 @@
 
 ## 0.5.3
 * Fixed bug regarding students with no email
+
+## 0.5.4
+* Fixed bug regarding curricular units with no students
