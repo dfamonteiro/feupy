@@ -396,6 +396,9 @@ class CurricularUnit:
             ]
         """
 
+        if self.number_of_students == 0:
+            return []
+
         data   = []
         tables = []
 
