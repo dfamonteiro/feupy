@@ -308,7 +308,7 @@ def _parse_course_box(bs_course_div):
     table = bs_course_div.find("table", {"class" : "formulario"})
     table_data = _utils.scrape_html_table(table)
             
-    current_year, status, first_academic_year = [row[1] for row in table_data]
+    current_year, status, first_academic_year = [row[1] for row in table_data[:3]]
     
     try:
         current_year = int(current_year)
