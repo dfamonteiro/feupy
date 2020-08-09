@@ -11,3 +11,6 @@
 
 ## 0.5.1
 * Fixed an infinite recursion bug regarding `timetable.all_timetables()`
+
+## 0.5.2
+* Fixed bug regarding too many lines in a student's course box
