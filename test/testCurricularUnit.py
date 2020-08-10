@@ -182,5 +182,13 @@ class TestAwkwardCourseTable(FeupyTestCase):
     def test_attributes(self):
         self.assertEqual(self.uc.curricular_years, (1, 3))
 
+class Test200Students(FeupyTestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.uc = CurricularUnit(436427)
+
+    def test_attributes(self):
+        self.assertEqual(len(self.uc.students(creds)), 200)
+
 if __name__ == '__main__':
     unittest.main()

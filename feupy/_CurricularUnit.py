@@ -417,7 +417,7 @@ class CurricularUnit:
 
             data.append((student, status, number_of_registrations, student_type))
                     
-        n_pages    = (self.number_of_students // 50) + 1
+        n_pages    = ((self.number_of_students - 1) // 50) + 1 # Example: ((200 - 1) // 50) + 1 = 4
         pages_urls = []
         for n in range(1, n_pages + 1):
             url = self.base_url + _utils.SIG_URLS["curricular unit students"] + "?" + _urllib.parse.urlencode({"pv_ocorrencia_id" : str(self.pv_ocorrencia_id), "pv_num_pag" : str(n)})
