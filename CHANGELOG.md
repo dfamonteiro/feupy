@@ -20,3 +20,6 @@
 
 ## 0.5.4
 * Fixed bug regarding curricular units with no students
+
+## 0.5.5
+* Fixed bug regarding curricular units with a number of students divisible by 50
