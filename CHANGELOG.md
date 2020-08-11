@@ -23,3 +23,6 @@
 
 ## 0.5.5
 * Fixed bug regarding curricular units with a number of students divisible by 50
+
+## 0.5.6
+* Fixed bug regarding curricular units with an awkward semester value
