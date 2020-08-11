@@ -132,7 +132,7 @@ class CurricularUnit:
        
         contents = soup.find("div", {"id" : "conteudoinner"})
 
-        self.name = contents.find_all("h1")[1].string
+        self.name = contents.find_all("h1")[1].string.strip()
 
         first_table = contents.find("table")
         self._parse_first_table(first_table)
@@ -166,10 +166,10 @@ class CurricularUnit:
         if len(matches) == 1:
             self.semester = matches[0]
         else:
-            matches = _re.findall(r"Instance: \d\d\d\d/\d\d\d\d - A", str(contents))
+            matches = _re.findall(r"Instance: \d\d\d\d/\d\d\d\d - (\w+)", str(contents))
             
             if len(matches) == 1:
-                self.semester = 'A'
+                self.semester = matches[0]
             else:
                 self.semester = None
 

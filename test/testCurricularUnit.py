@@ -157,6 +157,32 @@ class TestClass(FeupyTestCase):
         self.assertTrue(students[2][2])
         self.assertFalse(students[3][3])
 
+class TestAwkardSemester(FeupyTestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.uc = CurricularUnit(445082)
+    
+    def test_attributes(self):
+        expected_output = {
+            'ECTS_credits': 2.0,
+            'academic_year': 2019,
+            'acronym': 'EBECGC',
+            'base_url': 'https://sigarra.up.pt/feup/en/',
+            'code': 'EBECGC01',
+            'curricular_years': (1,),
+            'has_moodle': False,
+            'is_active': True,
+            'name': 'EBEC Porto 24h - Competition Management',
+            'number_of_students': 0,
+            'pv_ocorrencia_id': 445082,
+            'regents': (Teacher(210909),),
+            'semester': 'SP',
+            'teachers': (Teacher(210909),),
+            'url': 'https://sigarra.up.pt/feup/en/ucurr_geral.ficha_uc_view?pv_ocorrencia_id=445082',
+            'webpage_url': None
+        }
+
+        self.assertObjectAttributes(self.uc, expected_output)
 
 class TestNoTimetable(FeupyTestCase):
     @classmethod
