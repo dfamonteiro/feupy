@@ -89,7 +89,9 @@ class Student:
             return
         
         # Otherwise, it's a normal student page
+        self._load_normal_student_page(soup, use_cache)
 
+    def _load_normal_student_page(self, soup, use_cache : bool):
         self.name = soup.find("div", {"class" : "estudante-info-nome"}).string.strip()
         
         personal_webpage_div = soup.find("div", {"class" : "pagina-pessoal"})
@@ -115,7 +117,7 @@ class Student:
             if name_div.a == None: # There is no link
                 course = name_div.string
             else:
-                course = _Course.Course.from_a_tag(name_div.a, use_cache, base_url = base_url) # If there is a link, get the Course object
+                course = _Course.Course.from_a_tag(name_div.a, use_cache, base_url = self.base_url) # If there is a link, get the Course object
             
             institution = course_div.find("div", {"class" : "estudante-lista-curso-instit"}).string
 
@@ -227,7 +229,13 @@ class Student:
 
         if not isinstance(credentials, _Credentials.Credentials):
             raise TypeError(f"full_info() 'credentials' argument must be a Credentials object, not '{type(credentials).__name__}'")
-        
+
+        html = credentials.get_html(self.url)
+        soup = _bs4.BeautifulSoup(html, "lxml")
+
+        if not hasattr(self, "name"):
+            self._load_normal_student_page(soup, True)
+
         info = {
             "name"             : self.name,
             "links"            : self.links,
@@ -235,9 +243,6 @@ class Student:
             "username"         : self.username,
             "url"              : self.url
         }
-
-        html = credentials.get_html(self.url)
-        soup = _bs4.BeautifulSoup(html, "lxml")
 
         email_div = soup.find("div", {"class" : "email-institucional"})
 
