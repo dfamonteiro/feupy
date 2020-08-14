@@ -224,6 +224,8 @@ class TestTimetableException(FeupyTestCase):
     def test_attributes(self):
         with self.assertRaises(timetable.CoherenceError):
             self.uc.all_timetables(creds)
+        
+        self.uc.all_timetables(creds, True) # This shouldn't fail
 
 if __name__ == '__main__':
     unittest.main()
