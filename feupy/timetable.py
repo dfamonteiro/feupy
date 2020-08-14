@@ -47,13 +47,15 @@ class CoherenceError(Exception):
             "Unfortunately, there is no known way to fetch this event's data :(\n"
         )
 
-def parse_current_timetable(credentials: _Credentials.Credentials, url: str):
+def parse_current_timetable(credentials: _Credentials.Credentials, url: str, ignore_coherence : bool = False):
     """Attempts to return the related timetable that is valid today as a list of dictionaries.
     If no timetable is valid today, it returns None.
     
     Args:
         credentials (:obj:`feupy.Credentials`): A :obj:`feupy.Credentials` object
         url (str): The url of the timetable page
+        ignore_coherence (:obj:`bool`, optional): Whether or not this function should raise a :obj:`CoherenceError` exception
+            if the information of a class can not be fetched
 
     Returns:
         A list of dicts (e.g. see :func:`parse_timetable`) or None
@@ -62,17 +64,19 @@ def parse_current_timetable(credentials: _Credentials.Credentials, url: str):
     
     for (start, finish), url in _parse_side_bar(credentials, url).items():
         if start <= _datetime.date.today() <= finish:
-            return parse_timetable(credentials, url)
+            return parse_timetable(credentials, url, ignore_coherence)
     else:
         return None
 
 
-def parse_timetables(credentials: _Credentials.Credentials, url: str) -> dict:
+def parse_timetables(credentials: _Credentials.Credentials, url: str, ignore_coherence : bool = False) -> dict:
     """Returns the timetables related to this timetable (including) as a dictionary.
 
     Args:
         credentials (:obj:`feupy.Credentials`): A :obj:`feupy.Credentials` object
         url (str): The url of the timetable page
+        ignore_coherence (:obj:`bool`, optional): Whether or not this function should raise a :obj:`CoherenceError` exception
+            if the information of a class can not be fetched
 
     Returns:
         A dictionary which maps a tuple with two :obj:`datetime.date` objects,
@@ -294,7 +298,7 @@ def _parse_side_bar(credentials: _Credentials.Credentials, url: str) -> dict:
         result[_parse_dates(tag.string, academic_year)] = credentials.base_url.replace("/en/", "/pt/") + tag["href"]
     return result
 
-def parse_timetable(credentials: _Credentials.Credentials, url: str) -> list:
+def parse_timetable(credentials: _Credentials.Credentials, url: str, ignore_coherence : bool = False) -> list:
     """Parses the events (including overlaps) of the timetable
     with the given url as a list of dictionaries.
     
@@ -316,6 +320,8 @@ def parse_timetable(credentials: _Credentials.Credentials, url: str) -> list:
     Args:
         credentials (:obj:`feupy.Credentials`): A :obj:`feupy.Credentials` object
         url (str): The url of the timetable page
+        ignore_coherence (:obj:`bool`, optional): Whether or not this function should raise a :obj:`CoherenceError` exception
+            if the information of a class can not be fetched
 
     Returns:
         A list of dicts
@@ -477,12 +483,13 @@ def parse_timetable(credentials: _Credentials.Credentials, url: str) -> list:
             else:
                 url+=weeks_url_query # For some odd reason, single classes' urls don't include the start and finish weeks, a bug on sigarra's side perhaps?
 
-            for event in parse_timetable(credentials, url):
+            for event in parse_timetable(credentials, url, ignore_coherence):
                 if event["weekday"] == weekday and event["start"] == start:
                     result.append(event)
                     break
             else:
-                raise CoherenceError(url, minute, hour, weekday)
+                if not ignore_coherence:
+                    raise CoherenceError(url, minute, hour, weekday)
 
     def sort_key(event): # Sort by day and then by hour
         return (_weekdays.index(event["weekday"]), event["start"])
