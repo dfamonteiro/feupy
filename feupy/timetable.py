@@ -18,6 +18,34 @@ _weekdays_pt = ("Segunda", "Terça", "Quarta",
 
 _weekdays_pt_to_en = {pt: en for pt, en in zip(_weekdays_pt, _weekdays)}
 
+class CoherenceError(Exception):
+    """In very rare circumstances, it may be impossible to fetch a lesson's data.
+    This exception class is here to deal with that possibility.
+    
+    Args:
+        url (str): The url of the timetable page that is giving problems
+        minute (int)
+        hour (int)
+        weekday (str): "Monday", "Tuesday", etc.
+
+    Attributes:
+        url (str): The url of the timetable page that is giving problems
+        minute (int)
+        hour (int)
+        weekday (str): "Monday", "Tuesday", etc."""
+
+    def __init__(self, url, minute, hour, weekday):
+        self.url = url
+        self.minute = minute
+        self.hour = hour
+        self.weekday = weekday
+
+        super().__init__(
+           f"An event wasn't found in the following timetable link:\n{url}\n"
+           f"A lesson that starts at {hour}:{minute} at {weekday} doesn't appear to exist but it should\n"
+            "Note: If you see a \"Aulas Sobrepostas\" table at the bottom of the page (see link), this exception is expected.\n"
+            "Unfortunately, there is no known way to fetch this event's data :(\n"
+        )
 
 def parse_current_timetable(credentials: _Credentials.Credentials, url: str):
     """Attempts to return the related timetable that is valid today as a list of dictionaries.
@@ -454,10 +482,7 @@ def parse_timetable(credentials: _Credentials.Credentials, url: str) -> list:
                     result.append(event)
                     break
             else:
-                raise Exception(f"An event wasn't found in the following timetable link:\n{url}\n"
-                                f"A lesson that starts at {hour}:{minute} at {weekday} doesn't appear to exist but it should\n"
-                                "Note: If you see a \"Aulas Sobrepostas\" table at the bottom of the page (see link), this exception is expected.\n"
-                                "Unfortunately, there is no known way to fetch the this event's data :(\n")
+                raise CoherenceError(url, minute, hour, weekday)
 
     def sort_key(event): # Sort by day and then by hour
         return (_weekdays.index(event["weekday"]), event["start"])
