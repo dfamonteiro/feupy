@@ -263,7 +263,7 @@ def parse_timetables(credentials: _Credentials.Credentials, url: str, ignore_coh
     result = _parse_side_bar(credentials, url)
 
     for key in result:
-        result[key] = parse_timetable(credentials, result[key])
+        result[key] = parse_timetable(credentials, result[key], ignore_coherence)
 
     return result
 

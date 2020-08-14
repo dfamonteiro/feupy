@@ -440,7 +440,7 @@ class CurricularUnit:
         
         return data
     
-    def timetable(self, credentials : _Credentials.Credentials) -> list:
+    def timetable(self, credentials : _Credentials.Credentials, ignore_coherence : bool = False) -> list:
         """Returns the curricular unit's current timetable as a list of dictionaries if possible, otherwise returns None.
         (see :func:`timetable.parse_current_timetable` for more info)
         
@@ -450,9 +450,9 @@ class CurricularUnit:
         html = credentials.get_html(self.base_url.replace("/en/", "/pt/") + _utils.SIG_URLS["curricular unit timetable"], {"pv_ocorrencia_id" : self.pv_ocorrencia_id})
         soup = _bs4.BeautifulSoup(html, "lxml")
 
-        return _timetable.parse_current_timetable(credentials, soup.a["href"])
-    
-    def all_timetables(self, credentials : _Credentials.Credentials) -> dict:
+        return _timetable.parse_current_timetable(credentials, soup.a["href"], ignore_coherence)
+
+    def all_timetables(self, credentials : _Credentials.Credentials, ignore_coherence : bool = False) -> dict:
         """Parses all the timetables related to this curricular unit
         (see :obj:`timetable.parse_timetables` for further info).
         
@@ -465,7 +465,7 @@ class CurricularUnit:
         html = credentials.get_html(self.base_url.replace("/en/", "/pt/") + _utils.SIG_URLS["curricular unit timetable"], {"pv_ocorrencia_id" : self.pv_ocorrencia_id})
         soup = _bs4.BeautifulSoup(html, "lxml")
 
-        return _timetable.parse_timetables(credentials, soup.a["href"])
+        return _timetable.parse_timetables(credentials, soup.a["href"], ignore_coherence)
 
     def other_occurrences(self, use_cache : bool = True) -> tuple:
         """Returns the occurrences of this curricular unit from other years as a
