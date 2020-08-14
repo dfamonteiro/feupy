@@ -52,7 +52,7 @@ class TestIope(FeupyTestCase):
             'curricular_years': (3, 4),
             'has_moodle': True,
             'name': 'Operations Research',
-            'number_of_students': 148,
+            'number_of_students': 147,
             'pv_ocorrencia_id': 436840,
             'regents': (Teacher(209980), Teacher(233753), Teacher(452947)),
             'semester': '1',
