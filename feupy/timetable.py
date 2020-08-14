@@ -454,7 +454,10 @@ def parse_timetable(credentials: _Credentials.Credentials, url: str) -> list:
                     result.append(event)
                     break
             else:
-                raise Exception  # Something went wrong
+                raise Exception(f"An event wasn't found in the following timetable link:\n{url}\n"
+                                f"A lesson that starts at {hour}:{minute} at {weekday} doesn't appear to exist but it should\n"
+                                "Note: If you see a \"Aulas Sobrepostas\" table at the bottom of the page (see link), this exception is expected.\n"
+                                "Unfortunately, there is no known way to fetch the this event's data :(\n")
 
     def sort_key(event): # Sort by day and then by hour
         return (_weekdays.index(event["weekday"]), event["start"])
