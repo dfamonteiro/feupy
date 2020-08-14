@@ -53,17 +53,23 @@ class Student:
 
     __slots__ = ["name", "links", "personal_webpage", "username", "courses", "url", "base_url"]
 
+    _locked_students = set() # The students whose information is inaccessible
+
     def __init__(self, username : int, use_cache : bool = True, base_url : str = "https://sigarra.up.pt/feup/en/"):
 
         self.username = username
         self.base_url = base_url
         self.url = self.base_url + _utils.SIG_URLS["student page"] + "?" + _urllib.parse.urlencode({"pv_num_unico" : str(username)})
-        
+
+        if username in self._locked_students:
+            return
+
         try:
             html = _cache.get_html(url = self.url, use_cache = use_cache) # Getting the html
         except _requests.exceptions.HTTPError as e:
             if e.response.status_code == 403:
                 _warnings.warn(Warning(f"Student {self.username}'s data can't be fetched. Most attributes will not be set"))
+                self._locked_students.add(username)
                 return
             else:
                 raise e
