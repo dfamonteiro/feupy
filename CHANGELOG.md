@@ -26,3 +26,6 @@
 
 ## 0.5.6
 * Fixed bug regarding curricular units with an awkward semester value
+
+## 0.5.7
+* Refactored `timetables.py`
