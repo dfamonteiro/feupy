@@ -78,7 +78,12 @@ class Student:
         if "Estudante não encontrado." in html:
             raise ValueError(f"Student with username '{username}' doesn't exist")
         
-        if "Problem found" in html: # the only info we can get is the name (I don't think it's even the entire name)
+        # Otherwise, it's a normal student page
+        self._load_normal_student_page(soup, use_cache)
+
+    def _load_normal_student_page(self, soup, use_cache : bool):
+        
+        if "Problem found" in str(soup): # the only info we can get is the name (I don't think it's even the entire name)
             content_soup = soup.find("div", {"id" : "conteudoinner"})
             self.name = content_soup.contents[5].string
 
@@ -88,10 +93,6 @@ class Student:
 
             return
         
-        # Otherwise, it's a normal student page
-        self._load_normal_student_page(soup, use_cache)
-
-    def _load_normal_student_page(self, soup, use_cache : bool):
         self.name = soup.find("div", {"class" : "estudante-info-nome"}).string.strip()
         
         personal_webpage_div = soup.find("div", {"class" : "pagina-pessoal"})
