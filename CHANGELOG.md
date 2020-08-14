@@ -32,3 +32,6 @@
 
 ## 0.5.8
 * Added support for students from other faculties
+
+## 0.5.9
+* Bugfixes and performance improvements (I've reached peak changelog)
