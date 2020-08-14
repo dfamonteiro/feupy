@@ -29,3 +29,6 @@
 
 ## 0.5.7
 * Refactored `timetables.py`
+
+## 0.5.8
+* Added support for students from other faculties
