@@ -2,6 +2,8 @@ import re as _re
 import urllib as _urllib
 
 import bs4 as _bs4
+import requests as _requests
+import warnings as _warnings
 
 from . import _Credentials
 from . import _internal_utils as _utils
@@ -57,7 +59,14 @@ class Student:
         self.base_url = base_url
         self.url = self.base_url + _utils.SIG_URLS["student page"] + "?" + _urllib.parse.urlencode({"pv_num_unico" : str(username)})
         
-        html = _cache.get_html(url = self.url, use_cache = use_cache) # Getting the html
+        try:
+            html = _cache.get_html(url = self.url, use_cache = use_cache) # Getting the html
+        except _requests.exceptions.HTTPError as e:
+            if e.response.status_code == 403:
+                _warnings.warn(Warning(f"Student {self.username}'s data can't be fetched. Most attributes will not be set"))
+                return
+            else:
+                raise e
         soup = _bs4.BeautifulSoup(html, "lxml")
 
         if "Estudante não encontrado." in html:
