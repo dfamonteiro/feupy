@@ -41,3 +41,6 @@
 
 ## 0.5.13
 * Fixed bug regarding FCUP timetables not loading correctly
+
+## 0.5.14
+* Fixed another bug regarding FCUP timetables not loading correctly
