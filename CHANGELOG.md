@@ -35,3 +35,6 @@
 
 ## 0.5.9
 * Bugfixes and performance improvements (I've reached peak changelog)
+
+## 0.5.12
+* Fixed bug regarding FCUP classes not loading correctly
