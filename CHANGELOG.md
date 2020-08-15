@@ -44,3 +44,6 @@
 
 ## 0.5.14
 * Fixed another bug regarding FCUP timetables not loading correctly
+
+## 0.5.16
+* Courses will now attempt to find their faculty
