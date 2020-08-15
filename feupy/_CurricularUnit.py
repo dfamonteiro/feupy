@@ -103,12 +103,12 @@ class CurricularUnit:
     __slots__ = ["pv_ocorrencia_id", "url", "name", "code", "acronym", "academic_year", "semester", "has_moodle", "is_active", "webpage_url", 
                  "number_of_students", "curricular_years", "ECTS_credits", "regents", "teachers", "text", "base_url"]
     
-    def __init__(self, pv_ocorrencia_id : int, use_cache : bool = True, base_url : str = "https://sigarra.up.pt/feup/en/"):
+    def __init__(self, pv_ocorrencia_id : int, use_cache : bool = True, base_url : str = "https://sigarra.up.pt/feup/en/", try_recovery : bool = True):
 
         self.pv_ocorrencia_id = pv_ocorrencia_id
         self.base_url = base_url
         self.url = self.base_url + _utils.SIG_URLS["curricular unit"] + "?" + _urllib.parse.urlencode({"pv_ocorrencia_id" : str(pv_ocorrencia_id)})
-        
+
         html = _cache.get_html(url = self.url, use_cache = use_cache) # Getting the html
         soup = _bs4.BeautifulSoup(html, "lxml")
 
@@ -128,6 +128,17 @@ class CurricularUnit:
         self.base_url = self.url[:index]
         
         if "The School responsible for the occurrence was not found." in html or "Não foi encontrada a ocorrência especificada." in html:
+            if try_recovery:
+                for base_url in _utils.BASE_URLS:
+                    try:
+                        uc = CurricularUnit(pv_ocorrencia_id, use_cache, base_url, try_recovery=False)
+                        for key, value in vars(uc).items():
+                            setattr(self, key, value)
+                        return
+
+                    except ValueError:
+                        continue
+            
             raise ValueError(f"Curricular unit with pv_ocorrencia_id {pv_ocorrencia_id} doesn't exist")
        
         contents = soup.find("div", {"id" : "conteudoinner"})

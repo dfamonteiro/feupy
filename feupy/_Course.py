@@ -71,17 +71,8 @@ class Course:
         soup = _bs4.BeautifulSoup(html, "lxml")
 
         if "Course/Cycle of Studies nonexistent." in html or "The Organic Unit is not involved in teaching the course/CS." in html:
-            base_urls = [
-                "https://sigarra.up.pt/flup/en/",
-                "https://sigarra.up.pt/feup/en/",
-                "https://sigarra.up.pt/fep/en/",
-                "https://sigarra.up.pt/fbaup/en/",
-                "https://sigarra.up.pt/icbas/en/",
-                "https://sigarra.up.pt/fcup/en/",
-                "https://sigarra.up.pt/faup/en/",
-            ]
             if try_recovery:
-                for base_url in base_urls:
+                for base_url in _utils.BASE_URLS:
                     try:
                         course = Course(pv_curso_id, pv_ano_lectivo, use_cache, base_url, try_recovery=False)
                         for key, value in vars(course).items():

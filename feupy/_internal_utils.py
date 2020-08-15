@@ -37,6 +37,15 @@ SIG_URLS = {
     "redirection page"                    : "vld_entidades_geral.entidade_pagina"
 }
 
+BASE_URLS = [
+    "https://sigarra.up.pt/flup/en/",
+    "https://sigarra.up.pt/feup/en/",
+    "https://sigarra.up.pt/fep/en/",
+    "https://sigarra.up.pt/fbaup/en/",
+    "https://sigarra.up.pt/icbas/en/",
+    "https://sigarra.up.pt/fcup/en/",
+    "https://sigarra.up.pt/faup/en/",
+]
 
 def get_current_academic_year():
     today = datetime.now()
