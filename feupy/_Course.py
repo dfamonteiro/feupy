@@ -52,7 +52,7 @@ class Course:
     """
     __slots__ = ["pv_curso_id","pv_ano_lectivo", "url", "name", "official_code", "directors", "acronym", "text", "base_url", "involved_organic_units"]
 
-    def __init__(self, pv_curso_id : int, pv_ano_lectivo : int = None, use_cache : bool = True, base_url : str = "https://sigarra.up.pt/feup/en/"):
+    def __init__(self, pv_curso_id : int, pv_ano_lectivo : int = None, use_cache : bool = True, base_url : str = "https://sigarra.up.pt/feup/en/", try_recovery : bool = True):
         
         if pv_ano_lectivo == None:
             pv_ano_lectivo = _utils.get_current_academic_year()
@@ -71,6 +71,26 @@ class Course:
         soup = _bs4.BeautifulSoup(html, "lxml")
 
         if "Course/Cycle of Studies nonexistent." in html or "The Organic Unit is not involved in teaching the course/CS." in html:
+            base_urls = [
+                "https://sigarra.up.pt/flup/en/",
+                "https://sigarra.up.pt/feup/en/",
+                "https://sigarra.up.pt/fep/en/",
+                "https://sigarra.up.pt/fbaup/en/",
+                "https://sigarra.up.pt/icbas/en/",
+                "https://sigarra.up.pt/fcup/en/",
+                "https://sigarra.up.pt/faup/en/",
+            ]
+            if try_recovery:
+                for base_url in base_urls:
+                    try:
+                        course = Course(pv_curso_id, pv_ano_lectivo, use_cache, base_url, try_recovery=False)
+                        for key, value in vars(course).items():
+                            setattr(self, key, value)
+                        return
+
+                    except ValueError:
+                        continue
+
             raise ValueError(f"Course with pv_curso_id {pv_curso_id} and pv_ano_lectivo {pv_ano_lectivo} doesn't exist")
        
         contents = soup.find("div", {"id" : "conteudoinner"})
