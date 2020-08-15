@@ -38,3 +38,6 @@
 
 ## 0.5.12
 * Fixed bug regarding FCUP classes not loading correctly
+
+## 0.5.13
+* Fixed bug regarding FCUP timetables not loading correctly
