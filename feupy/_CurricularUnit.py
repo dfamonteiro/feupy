@@ -195,6 +195,14 @@ class CurricularUnit:
 
 
     def _parse_third_table(self, third_table) -> None:
+
+        # https://sigarra.up.pt/fcup/en/ucurr_geral.ficha_uc_view?pv_ocorrencia_id=449203
+        if third_table == None:
+            self.number_of_students = 0
+            self.curricular_years = ()
+            self.ECTS_credits = 0
+            return
+
         rows = third_table.find_all("tr", {"class" : "d"})
         table = [row.find_all("td") for row in rows]
         
