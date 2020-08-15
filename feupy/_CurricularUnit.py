@@ -743,6 +743,9 @@ class CurricularUnit:
             soup = _bs4.BeautifulSoup(html, "lxml")
             contents = soup.find("div", {"id" : "conteudo"})
 
+            if "There are no classes" in html:
+                continue
+
             all_students_urls = (self.base_url + tag["href"] for tag in contents.find_all("a") if tag.parent.name == "td")
             _cache.get_html_async(all_students_urls, use_cache = use_cache) # refresh the cache
             
