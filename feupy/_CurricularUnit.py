@@ -722,15 +722,19 @@ class CurricularUnit:
                 '...'     : [...]
             }
         """
-        html = credentials.get_html(self.base_url + _utils.SIG_URLS["curricular unit classes"], params = {"pv_ocorrencia_id" : str(self.pv_ocorrencia_id)}) # this html redirects us to the url we want
+        html = credentials.get_html(self.base_url + _utils.SIG_URLS["curricular unit classes"], params = {"pv_ocorrencia_id" : str(self.pv_ocorrencia_id)})   
         soup = _bs4.BeautifulSoup(html, "lxml")
 
-        tags = soup.find_all("a")
-
-        if len(tags) == 1:
-            urls = [tags[0]["href"]]
+        for meta in soup.find_all("meta"):
+            if "http-equiv" in meta.attrs and meta.attrs["http-equiv"] == "Refresh":
+                urls = [soup.find("a")["href"]]
+                break
         else:
-            urls = [self.base_url + tag["href"] for tag in tags if "it_listagem.lista_turma_disciplina" in str(tag)]
+            content_tags = soup.find("div", {"id" : "conteudo"}).find_all("a")
+            urls = [self.base_url + tag["href"] for tag in content_tags if "it_listagem.lista_turma_disciplina" in str(tag) and "mail" not in str(tag)]
+
+            if len(urls) == 0:
+                urls = [self.base_url + _utils.SIG_URLS["curricular unit classes"] + "?pv_ocorrencia_id=" + str(self.pv_ocorrencia_id)]
 
         result = {}
 
@@ -744,8 +748,13 @@ class CurricularUnit:
             
             title = contents.find("h3") # starting point
 
-            while title.find_next("h3") != None:
-                title = title.find_next("h3") # Skip to the next class
+            already_valid = "mail_dinamico" in str(title)
+
+            while title.find_next("h3") != None or already_valid:
+                if already_valid:
+                    already_valid = False
+                else:
+                    title = title.find_next("h3") # Skip to the next class
 
                 class_name = _re.findall(r"Class: ([^\s]+)", title.text)[0]
 

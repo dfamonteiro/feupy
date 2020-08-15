@@ -216,6 +216,10 @@ class Test200Students(FeupyTestCase):
     def test_attributes(self):
         self.assertEqual(len(self.uc.students(creds)), 200)
 
+class TestFcupClasses(FeupyTestCase):
+    def test_attributes(self):
+        self.assertEqual(len(CurricularUnit(443004).classes(creds)["FIS4011_TP"]), 4)
+
 class TestTimetableException(FeupyTestCase):
     @classmethod
     def setUpClass(cls):
