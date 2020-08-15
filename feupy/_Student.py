@@ -254,7 +254,7 @@ class Student:
 
         info["email"] = email
 
-        courses = [_parse_course_box(div) for div in soup.find_all("div", {"class" : "estudante-lista-curso-activo"})]
+        courses = [_parse_course_box(div, self.base_url) for div in soup.find_all("div", {"class" : "estudante-lista-curso-activo"})]
         info["courses"] = courses
 
         return info
@@ -307,7 +307,7 @@ class Student:
         return f"{self.name} ({self.username})"
 
 
-def _parse_course_box(bs_course_div):
+def _parse_course_box(bs_course_div, base_url):
     """Parses the the information available in the "estudante-lista-curso-activo" div.
     NOTE: Doesn't work with unpriviledged access to the student page
     It returns a dictionary like this: 
@@ -327,7 +327,7 @@ def _parse_course_box(bs_course_div):
     if name_div.a == None:  # There is no link
         course = name_div.string
     else:
-        course = _Course.Course.from_a_tag(name_div.a)
+        course = _Course.Course.from_a_tag(name_div.a, base_url=base_url)
         
     institution = bs_course_div.find("div", {"class": "estudante-lista-curso-instit"}).string
     
