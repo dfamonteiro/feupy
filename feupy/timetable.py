@@ -273,6 +273,8 @@ def _parse_side_bar(credentials: _Credentials.Credentials, url: str) -> dict:
     html = credentials.get_html(url)
     soup = _bs4.BeautifulSoup(html, 'lxml')
 
+    base_url = _re.findall(r"^https?://sigarra\.up\.pt/\w+/\w+/", url)[0]
+
     timetables_links_table = soup.find("table", {"class": "horario-semanas ecra"})
 
     if timetables_links_table == None:
@@ -295,7 +297,7 @@ def _parse_side_bar(credentials: _Credentials.Credentials, url: str) -> dict:
 
     result = {}
     for tag in timetable_tags:
-        result[_parse_dates(tag.string, academic_year)] = credentials.base_url.replace("/en/", "/pt/") + tag["href"]
+        result[_parse_dates(tag.string, academic_year)] = base_url + tag["href"]
     return result
 
 def parse_timetable(credentials: _Credentials.Credentials, url: str, ignore_coherence : bool = False) -> list:
