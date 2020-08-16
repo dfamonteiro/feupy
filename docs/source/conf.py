@@ -21,7 +21,7 @@ copyright = '2019, Daniel Monteiro'
 author = 'Daniel Monteiro'
 
 # The full version, including alpha/beta/rc tags
-release = '0.5.18'
+release = '0.5.19'
 
 master_doc = 'index'
 # -- General configuration ---------------------------------------------------
