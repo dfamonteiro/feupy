@@ -47,3 +47,6 @@
 
 ## 0.5.16
 * Courses will now attempt to find their faculty
+
+## 0.5.18
+* Fix bug regarding empty classes pages
