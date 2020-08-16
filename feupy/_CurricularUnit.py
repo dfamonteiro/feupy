@@ -227,7 +227,7 @@ class CurricularUnit:
 
             self.curricular_years = tuple(self.curricular_years)
 
-        self.ECTS_credits    = float(table[0][5].string.replace(',', '.'))
+        self.ECTS_credits = float(table[0][5].string.replace(',', '.')) if table[0][5].string != None else None
 
 
     def _parse_teachers(self, contents):
