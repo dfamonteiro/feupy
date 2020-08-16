@@ -770,6 +770,9 @@ class CurricularUnit:
             
             title = contents.find("h3") # starting point
 
+            if title == None:
+                continue
+
             already_valid = "mail_dinamico" in str(title)
 
             while title.find_next("h3") != None or already_valid:
