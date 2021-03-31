@@ -1,4 +1,4 @@
-lxml==4.4.1
+lxml==4.6.3
 requests==2.22.0
 requests_futures==1.0.0
 Pillow==7.1.1
